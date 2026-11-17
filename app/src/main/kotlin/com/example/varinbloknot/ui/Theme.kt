@@ -73,4 +73,4 @@ fun T(
     )
 }
 
-fun money(n: Int): String = n.toString().reversed().chunked(3).joinToString(" ").reversed() + " ₽"
+fun money(n: Int): String = com.example.varinbloknot.logic.formatMoney(n)

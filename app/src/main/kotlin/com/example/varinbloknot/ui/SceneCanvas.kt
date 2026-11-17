@@ -24,10 +24,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import com.example.varinbloknot.data.CharDef
+import com.example.varinbloknot.data.PaintObj
 import com.example.varinbloknot.data.Scene
 import com.example.varinbloknot.data.SceneArt
+import com.example.varinbloknot.logic.nearestOpaque
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.ceil
@@ -40,6 +41,8 @@ class SceneAssets(
     val img: Map<String, ImageBitmap>,
     val chars: Map<String, CharDef>,
     val charImg: Map<String, ImageBitmap>,
+    /** Точка на каждом раскрашиваемом предмете (в координатах кадра) — для значка-капли. */
+    val anchors: Map<String, Offset>,
 )
 
 @Composable
@@ -50,22 +53,37 @@ fun rememberSceneAssets(scene: Scene): SceneAssets? {
             val art = c.sceneArt(scene.dir) ?: return@withContext null
             val bmp = HashMap<String, Bitmap>()
             val img = HashMap<String, ImageBitmap>()
-            for (l in art.layers) {
-                for (n in listOfNotNull(l.name, l.tint?.removeSuffix(".webp"))) {
-                    if (n in img) continue
-                    val b = c.bitmap("${scene.dir}/layers/$n") ?: continue
-                    img[n] = b.asImageBitmap()
-                    if (n == l.name) bmp[n] = b
-                }
+            fun load(n: String) {
+                if (n in img) return
+                val b = c.bitmap("${scene.dir}/layers/$n") ?: return
+                img[n] = b.asImageBitmap(); bmp[n] = b
             }
+            for (l in art.layers) { load(l.name); l.tint?.removeSuffix(".webp")?.let { load(it) } }
+            scene.design.paint.forEach { p -> p.overlay?.let { load(it) } }
             val chars = c.characters()
-            val ids = scene.stage.keys + scene.dialog.map { it.who }
             val ci = HashMap<String, ImageBitmap>()
-            for (id in ids) {
+            for (id in scene.stage.keys + scene.dialog.map { it.who }) {
                 val d = chars[id] ?: continue
                 c.bitmap("characters/" + d.file)?.let { ci[id] = it.asImageBitmap() }
             }
-            SceneAssets(art, bmp, img, chars, ci)
+            val anchors = HashMap<String, Offset>()
+            for (p in scene.design.paint) {
+                val l = art.layers.firstOrNull { it.name == p.layer } ?: continue
+                val b = bmp[p.overlay ?: p.layer] ?: continue
+                // центр масс непрозрачных пикселей, затем ближайший к нему непрозрачный (у штор центр — на окне)
+                var sx = 0L; var sy = 0L; var n = 0
+                val step = maxOf(1, minOf(b.width, b.height) / 60)
+                var y = 0
+                while (y < b.height) {
+                    var x = 0
+                    while (x < b.width) { if (android.graphics.Color.alpha(b.getPixel(x, y)) > 128) { sx += x; sy += y; n++ }; x += step }
+                    y += step
+                }
+                if (n == 0) continue
+                val pt = nearestOpaque(b.width, b.height, (sx / n).toInt(), (sy / n).toInt()) { x, yy -> android.graphics.Color.alpha(b.getPixel(x, yy)) > 128 } ?: continue
+                anchors[p.id] = Offset(l.x + pt.first * l.w / b.width.toFloat(), l.y + pt.second * l.h / b.height.toFloat())
+            }
+            SceneAssets(art, bmp, img, chars, ci, anchors)
         }
     }.value
 }
@@ -84,27 +102,62 @@ fun camFor(vw: Float, vh: Float, aw: Int, ah: Int, zoom: Float, fx: Float, fy: F
 
 class Placed(val image: ImageBitmap, val footX: Float, val footY: Float, val heightPx: Float)
 
-private val NoHit = setOf("background", "ao", "shadows", "kshadows", "lampglow", "varya")
+private val NoHit = setOf("background", "ao", "shadows", "kshadows", "lampglow", "varya", "ceiling")
 
-/** Какой слой лежит под точкой кадра (сверху вниз; по непрозрачному пикселю). */
-fun hitLayer(a: SceneAssets, hidden: Set<String>, fx: Float, fy: Float): String? {
+private fun alphaAt(a: SceneAssets, name: String, lx: Int, ly: Int, lw: Int, lh: Int, fx: Float, fy: Float): Boolean {
+    val b = a.bmp[name] ?: return false
+    val px = ((fx - lx) * b.width / lw).toInt().coerceIn(0, b.width - 1)
+    val py = ((fy - ly) * b.height / lh).toInt().coerceIn(0, b.height - 1)
+    return android.graphics.Color.alpha(b.getPixel(px, py)) > 40
+}
+
+/** Какой слой лежит под точкой кадра (сверху вниз; по непрозрачному пикселю). Силуэты тоже ловят нажатие. */
+fun hitLayer(a: SceneAssets, hidden: Set<String>, ghosts: Set<String>, fx: Float, fy: Float): String? {
     for (l in a.art.layers.asReversed()) {
-        if (l.name in hidden || l.name in NoHit) continue
+        if (l.name in NoHit) continue
+        if (l.name in hidden && l.name !in ghosts) continue
         if (fx < l.x || fx >= l.x + l.w || fy < l.y || fy >= l.y + l.h) continue
-        val b = a.bmp[l.name] ?: continue
-        val px = ((fx - l.x) * b.width / l.w).toInt().coerceIn(0, b.width - 1)
-        val py = ((fy - l.y) * b.height / l.h).toInt().coerceIn(0, b.height - 1)
-        if (android.graphics.Color.alpha(b.getPixel(px, py)) > 40) return l.name
+        if (alphaAt(a, l.name, l.x, l.y, l.w, l.h, fx, fy)) return l.name
     }
     return null
+}
+
+/** Раскрашиваемый предмет в этой точке слоя (если на слое их несколько — тот, чья часть под пальцем). */
+fun paintAt(a: SceneAssets, paint: List<PaintObj>, layer: String, fx: Float, fy: Float): PaintObj? {
+    val cands = paint.filter { it.layer == layer }
+    if (cands.isEmpty()) return null
+    if (cands.size == 1) return cands[0]
+    val l = a.art.layers.firstOrNull { it.name == layer } ?: return null
+    return cands.firstOrNull { alphaAt(a, it.overlay ?: layer, l.x, l.y, l.w, l.h, fx, fy) }
+}
+
+private fun DrawScope.drawLayer(
+    img: ImageBitmap, cam: Cam, x: Float, y: Float, w: Float, h: Float,
+    alpha: Float = 1f, filter: ColorFilter? = null, scale: Float = 1f, pivotY: Float = 0.5f,
+) {
+    val sw = w * scale
+    val sh = h * scale
+    val ox = x + (w - sw) / 2
+    val oy = y + (h - sh) * pivotY
+    drawImage(
+        img,
+        dstOffset = IntOffset((cam.ox + ox * cam.s).roundToInt(), (cam.oy + oy * cam.s).roundToInt()),
+        dstSize = IntSize(ceil(sw * cam.s).toInt(), ceil(sh * cam.s).toInt()),
+        alpha = alpha, colorFilter = filter, filterQuality = FilterQuality.Medium,
+    )
 }
 
 @Composable
 fun SceneCanvas(
     a: SceneAssets,
     modifier: Modifier = Modifier,
+    paint: List<PaintObj> = emptyList(),
     hidden: Set<String> = emptySet(),
+    ghosts: Set<String> = emptySet(),
+    selected: Set<String> = emptySet(),
     tints: Map<String, Color> = emptyMap(),
+    fillAnim: Pair<String, Float>? = null,
+    pop: Pair<Set<String>, Float>? = null,
     zoom: Float = 1f, fx: Float = 0.5f, fy: Float = 0.5f,
     placed: List<Placed> = emptyList(),
     interactive: Boolean = false,
@@ -127,6 +180,7 @@ fun SceneCanvas(
         modifier.clipToBounds()
             .onSizeChanged { size = it }
             .pointerInput(interactive) {
+                var lastTap = 0L
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     val start = down.position
@@ -147,24 +201,54 @@ fun SceneCanvas(
                     } while (ev.changes.any { it.pressed })
                     if (!moved) {
                         val c = camState
-                        tapState?.invoke((start.x - c.ox) / c.s, (start.y - c.oy) / c.s)
+                        val now = System.currentTimeMillis()
+                        val fxp = (start.x - c.ox) / c.s
+                        val fyp = (start.y - c.oy) / c.s
+                        if (interactive && now - lastTap < 300) {
+                            // двойное касание: приблизить / вернуть
+                            if (uz > 1.2f) uz = 1f else { uz = 2.2f; ux = fxp / a.art.width; uy = fyp / a.art.height }
+                            lastTap = 0L
+                        } else {
+                            lastTap = now
+                            tapState?.invoke(fxp, fyp)
+                        }
                     }
                 }
             },
     ) {
         Canvas(Modifier.fillMaxSize()) {
             for (l in a.art.layers) {
+                val x = l.x.toFloat(); val y = l.y.toFloat(); val w = l.w.toFloat(); val h = l.h.toFloat()
+                if (l.name in ghosts) {
+                    a.img[l.name]?.let { drawLayer(it, cam, x, y, w, h, filter = ColorFilter.tint(Color(0x66FFFFFF), BlendMode.SrcIn)) }
+                    if (l.name in selected) a.img[l.name]?.let { drawLayer(it, cam, x, y, w, h, alpha = 0.9f, filter = ColorFilter.tint(C.Accent, BlendMode.SrcIn), scale = 1.07f) }
+                    continue
+                }
                 if (l.name in hidden) continue
-                val t = tints[l.name]
-                val image = if (t != null && l.tint != null) a.img[l.tint.removeSuffix(".webp")] else a.img[l.name]
-                if (image == null) continue
-                drawImage(
-                    image,
-                    dstOffset = IntOffset((cam.ox + l.x * cam.s).roundToInt(), (cam.oy + l.y * cam.s).roundToInt()),
-                    dstSize = IntSize(ceil(l.w * cam.s).toInt(), ceil(l.h * cam.s).toInt()),
-                    colorFilter = if (t != null && l.tint != null) ColorFilter.tint(t, BlendMode.Modulate) else null,
-                    filterQuality = FilterQuality.Medium,
-                )
+                val base = a.img[l.name] ?: continue
+                val popP = pop?.takeIf { l.name in it.first }?.second
+                val sc = if (popP != null) 0.8f + 0.2f * popP else 1f
+                val al = popP ?: 1f
+                if (l.name in selected) drawLayer(base, cam, x, y, w, h, alpha = 0.95f, filter = ColorFilter.tint(C.Accent, BlendMode.SrcIn), scale = 1.06f)
+
+                val tintObj = paint.firstOrNull { it.mode == "tint" && it.layer == l.name && it.id in tints }
+                if (tintObj != null) {
+                    val tImg = a.img[l.tint?.removeSuffix(".webp")]
+                    val col = tints[tintObj.id]
+                    val t = fillAnim?.takeIf { it.first == tintObj.id }?.second ?: 1f
+                    if (tImg != null && col != null) {
+                        if (t < 1f) drawLayer(base, cam, x, y, w, h, alpha = al, scale = sc, pivotY = 1f)
+                        drawLayer(tImg, cam, x, y, w, h, alpha = al * t, filter = ColorFilter.tint(col, BlendMode.Modulate), scale = sc, pivotY = 1f)
+                    } else drawLayer(base, cam, x, y, w, h, alpha = al, scale = sc, pivotY = 1f)
+                } else {
+                    drawLayer(base, cam, x, y, w, h, alpha = al, scale = sc, pivotY = 1f)
+                }
+                for (p in paint) {
+                    if (p.mode != "mask" || p.layer != l.name || p.id !in tints) continue
+                    val oi = a.img[p.overlay ?: continue] ?: continue
+                    val t = fillAnim?.takeIf { it.first == p.id }?.second ?: 1f
+                    drawLayer(oi, cam, x, y, w, h, alpha = al * t, filter = ColorFilter.tint(tints[p.id]!!, BlendMode.Modulate), scale = sc, pivotY = 1f)
+                }
             }
             for (p in placed) {
                 val h = p.heightPx * cam.s

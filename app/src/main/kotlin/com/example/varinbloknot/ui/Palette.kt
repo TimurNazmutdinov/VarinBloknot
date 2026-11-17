@@ -19,8 +19,8 @@ fun parseHex(s: String): Color = Color(android.graphics.Color.parseColor(s))
 /** Карандаш: корпус, деревянный кончик и грифель. Выбранный выдвинут вверх. */
 @Composable
 fun Pencil(color: Color, selected: Boolean, tall: Int, onClick: () -> Unit) {
-    Box(Modifier.width(44.dp).height(96.dp).tap(onClick), contentAlignment = Alignment.BottomCenter) {
-        Canvas(Modifier.width(28.dp).height(tall.dp).offset(y = if (selected) (-6).dp else 10.dp)) {
+    Box(Modifier.width(38.dp).height(96.dp).tap(onClick), contentAlignment = Alignment.BottomCenter) {
+        Canvas(Modifier.width(26.dp).height(tall.dp).offset(y = if (selected) (-6).dp else 10.dp)) {
             val tip = 18.dp.toPx()
             drawRect(color, Offset(0f, tip), androidx.compose.ui.geometry.Size(size.width, size.height - tip))
             drawRect(Color(0x22000000), Offset(size.width * 0.7f, tip), androidx.compose.ui.geometry.Size(size.width * 0.3f, size.height - tip))
@@ -32,15 +32,31 @@ fun Pencil(color: Color, selected: Boolean, tall: Int, onClick: () -> Unit) {
     }
 }
 
+/** Ластик: розовый брусок с бумажной полоской. */
 @Composable
-fun PencilRow(colors: List<Color>, selected: Color?, modifier: Modifier = Modifier, onPick: (Color) -> Unit) {
+fun EraserPencil(selected: Boolean, onClick: () -> Unit) {
+    Box(Modifier.width(38.dp).height(96.dp).tap(onClick), contentAlignment = Alignment.BottomCenter) {
+        Canvas(Modifier.width(26.dp).height(52.dp).offset(y = if (selected) (-6).dp else 10.dp)) {
+            drawRoundRect(Color(0xFFF2A8BD), Offset.Zero, androidx.compose.ui.geometry.Size(size.width, size.height), androidx.compose.ui.geometry.CornerRadius(6.dp.toPx()))
+            drawRect(Color(0xFFFFFFFF), Offset(0f, size.height * 0.55f), androidx.compose.ui.geometry.Size(size.width, size.height * 0.2f))
+            drawRect(Color(0x22000000), Offset(size.width * 0.7f, 0f), androidx.compose.ui.geometry.Size(size.width * 0.3f, size.height))
+        }
+    }
+}
+
+@Composable
+fun PencilRow(
+    colors: List<Color>, selected: Color?, modifier: Modifier = Modifier,
+    eraserOn: Boolean = false, onEraser: (() -> Unit)? = null, onPick: (Color) -> Unit,
+) {
     val heights = listOf(78, 86, 80, 84, 78, 88, 82, 84)
     Row(
-        modifier.clip(RoundedCornerShape(12.dp)).background(Color(0xFFF6EBCF)).padding(horizontal = 4.dp),
+        modifier.clip(RoundedCornerShape(12.dp)).background(Color(0xFFF6EBCF)).padding(horizontal = 2.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.Bottom,
     ) {
-        colors.forEachIndexed { i, col -> Pencil(col, selected == col, heights[i % heights.size]) { onPick(col) } }
+        colors.forEachIndexed { i, col -> Pencil(col, selected == col && !eraserOn, heights[i % heights.size]) { onPick(col) } }
+        if (onEraser != null) EraserPencil(eraserOn, onEraser)
     }
 }
 

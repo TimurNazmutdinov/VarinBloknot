@@ -61,4 +61,5 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.12.1")
     implementation("androidx.datastore:datastore-preferences:1.1.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.3")
+    testImplementation("junit:junit:4.13.2")
 }

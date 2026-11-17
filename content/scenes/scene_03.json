@@ -25,48 +25,70 @@
   }
  ],
  "design": {
-  "hint": "Нажми на шторы, чтобы выбрать цвет",
-  "tabs": [
-   "Цвет"
-  ],
+  "hint": "Нажми на предмет и выбери цвет",
   "palette": [
-   "#d9534f",
-   "#7fa8d8",
-   "#9cc6a0",
-   "#f3e3c4",
-   "#e8b23f",
-   "#cdc3ee"
+   "#e85d4a",
+   "#f2a23c",
+   "#f6d04d",
+   "#7cc56f",
+   "#4fb3c8",
+   "#6e8fe0",
+   "#b07ad9",
+   "#f28bb0"
   ],
   "budget": null,
-  "items": [
+  "items": [],
+  "paint": [
    {
-    "name": "Скатерть в клетку",
-    "price": null,
-    "acc": "скатерть",
-    "layers": [
-     "table"
-    ]
+    "id": "curtains",
+    "label": "Шторы",
+    "layer": "curtains",
+    "mode": "tint"
    },
    {
-    "name": "Миска",
-    "price": null,
-    "acc": "миску",
-    "layers": [
-     "bowl"
-    ]
+    "id": "table",
+    "label": "Скатерть",
+    "layer": "table",
+    "mode": "mask",
+    "overlay": "table_paint"
    },
    {
-    "name": "Банки для круп",
-    "price": null,
-    "acc": "банки",
-    "layers": [
-     "shelf"
-    ]
+    "id": "stools",
+    "label": "Табуретки",
+    "layer": "stools",
+    "mode": "mask",
+    "overlay": "stools_paint"
+   },
+   {
+    "id": "kettle",
+    "label": "Чайник",
+    "layer": "kettle",
+    "mode": "mask",
+    "overlay": "kettle_paint"
+   },
+   {
+    "id": "pot",
+    "label": "Кастрюля",
+    "layer": "kettle",
+    "mode": "mask",
+    "overlay": "pot_paint"
+   },
+   {
+    "id": "bowl",
+    "label": "Миска",
+    "layer": "bowl",
+    "mode": "mask",
+    "overlay": "bowl_paint"
+   },
+   {
+    "id": "lamp3",
+    "label": "Лампа",
+    "layer": "lamp",
+    "mode": "mask",
+    "overlay": "lamp3_paint"
    }
   ],
-  "layerNames": {
-   "curtains": "Шторы"
-  }
+  "paintHint": "Укрась кухню: выбери карандаш и нажми на предмет"
  },
  "dialog": [
   {
@@ -94,7 +116,8 @@
    "Мама добавила воды"
   ],
   "correct": 1,
-  "explain": "Верно! Дрожжи — живые, они «дышат» и надувают тесто пузырьками."
+  "explain": "Верно! Дрожжи — живые, они «дышат» и надувают тесто пузырьками.",
+  "hint": "Подумай: что делают живые существа, когда едят?"
  },
  "card": {
   "subject": "Биология",

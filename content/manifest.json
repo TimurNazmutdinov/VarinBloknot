@@ -1,6 +1,6 @@
 {
-    "contentVersion":  2,
-    "minAppVersion":  "0.2.0",
+    "contentVersion":  3,
+    "minAppVersion":  "0.3.0",
     "files":  [
                   {
                       "path":  "art/characters/babushka.webp",
@@ -123,6 +123,10 @@
                       "sha256":  "40b470e6c8efc3dcdc6e2d0e728457070bbc9110779539a5a73975975f91d9d8"
                   },
                   {
+                      "path":  "art/scene1_room/layers/lamp1_paint.webp",
+                      "sha256":  "7191c353326c6d942bc06e8d623dcd2abc7d0eb0a51c62da0e6716133cf91102"
+                  },
+                  {
                       "path":  "art/scene1_room/layers/lampglow.webp",
                       "sha256":  "aaccc2ecf18a76e710c023128920e43162d898f02a987e5addc92c7b9fca886a"
                   },
@@ -211,6 +215,10 @@
                       "sha256":  "39b447f77db41e9a192d36ad75fc06b536e3458e2aababee5f546ca75f4dd12b"
                   },
                   {
+                      "path":  "art/scene2_desk/layers/cup_paint.webp",
+                      "sha256":  "8b7bd2e3fb0667f26b7954100b89fedf615803e7d1a261a08131e2f624088d6e"
+                  },
+                  {
                       "path":  "art/scene2_desk/layers/curtains.webp",
                       "sha256":  "41d301067daac67e9bce01f49468c4716b49429fb99b8493ca84074feffdfedf"
                   },
@@ -227,6 +235,10 @@
                       "sha256":  "d1c00ac49f8e7c33cd1e3432b5fc56423d9fed068b8defb49a9d63919f470d8d"
                   },
                   {
+                      "path":  "art/scene2_desk/layers/lamp2_paint.webp",
+                      "sha256":  "614890e205574cf5a67a55d270af694abbcfa2acfe2654a9f7a1af372d216084"
+                  },
+                  {
                       "path":  "art/scene2_desk/layers/lampglow.webp",
                       "sha256":  "460e23e81b3970f749a4d0c3208394c5b72f832793282d87d12813aa4fa1571a"
                   },
@@ -237,6 +249,10 @@
                   {
                       "path":  "art/scene2_desk/layers/piggy.webp",
                       "sha256":  "93f34d70772ca5acc3a3d3c3e1c9db804807cbcc953c097c105b68de9541f6fa"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/piggy_paint.webp",
+                      "sha256":  "9f9488940e476dbce8c766a7184c1a61a06735f0ad4fd458e0781a02c43dabec"
                   },
                   {
                       "path":  "art/scene2_desk/layers/radiator.webp",
@@ -271,6 +287,10 @@
                       "sha256":  "2ca6f55ba94fdde5ce2372c9c4da86d6bf77f2e391a44096feacbd577ef57669"
                   },
                   {
+                      "path":  "art/scene3_kitchen/layers/bowl_paint.webp",
+                      "sha256":  "3f820fc4e097e6cf6c43c67e2512f8a09b9b2bf2b4ca428a466909ec6c76ebde"
+                  },
+                  {
                       "path":  "art/scene3_kitchen/layers/catk.webp",
                       "sha256":  "66e51fc2072dd718f1d091bc8e295cb511e3b44239c3409e263db1d8dcda7d96"
                   },
@@ -303,12 +323,24 @@
                       "sha256":  "5e2168f842e7673c892827e1a63b39526b0f7cdf6cd6c7ba004d6846e3613ba4"
                   },
                   {
+                      "path":  "art/scene3_kitchen/layers/kettle_paint.webp",
+                      "sha256":  "5f419b2cdf68e48db772a8633cd2c2d0ec249c2e2e4e1a57815fdfc14ae8a162"
+                  },
+                  {
                       "path":  "art/scene3_kitchen/layers/kshadows.webp",
                       "sha256":  "57545a0a0beccd2ebe1b54c092fe595532e770eaa4dd2c9b40185289cba934bd"
                   },
                   {
                       "path":  "art/scene3_kitchen/layers/lamp.webp",
                       "sha256":  "cd3828844ab8cdf7cbf6aec58309eb8570be6b9769fa7cb90fda9461ead76476"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/lamp3_paint.webp",
+                      "sha256":  "e9ae2ded3d33dd78be238e19d49bca32b8dba03e8bdd01c186a5e085c683b5fd"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/pot_paint.webp",
+                      "sha256":  "573d1edd4fcf8a43bce779d313880d9664bec4fe85535ed712951038ce5cddad"
                   },
                   {
                       "path":  "art/scene3_kitchen/layers/props.webp",
@@ -331,6 +363,10 @@
                       "sha256":  "e91aba0eba6937e230b1cc0978aae7502b5d9d08c799832a4ac80548bc86c3e3"
                   },
                   {
+                      "path":  "art/scene3_kitchen/layers/stools_paint.webp",
+                      "sha256":  "af19b53cce0b298a641110c3d1ea9aa1c3550702fd5fc2da7ad9722edc0ce826"
+                  },
+                  {
                       "path":  "art/scene3_kitchen/layers/stove.webp",
                       "sha256":  "644531cfbece9bfbf23c36993f8a5920f06834edcb540b0ac5b321aaf5ad2234"
                   },
@@ -339,16 +375,20 @@
                       "sha256":  "281d3a5feca2fd94a6d34151f1d1c0d555ed11ca875063d6f78391e7279e6cfe"
                   },
                   {
+                      "path":  "art/scene3_kitchen/layers/table_paint.webp",
+                      "sha256":  "8b7290107c9697b6526d84918daa84d42c5aa5947ed60c8774473e0f44b33a93"
+                  },
+                  {
                       "path":  "scenes/scene_01.json",
-                      "sha256":  "f69e647a12e8e5a14777e3133b3eccc502d21ff135208979bc8bc7c4f72a8a48"
+                      "sha256":  "032027f40e5d8717de842e7e5057b1caea15637147e5c355e74a0424eb5d9a33"
                   },
                   {
                       "path":  "scenes/scene_02.json",
-                      "sha256":  "fd6c5602bae407205f36c3c8fbdbafbfc05f97dd08c613450cb596550bffa5a4"
+                      "sha256":  "26870f1c13fe3a98a8add71db607d13d374411a0da925d93dd7ad7c61873745e"
                   },
                   {
                       "path":  "scenes/scene_03.json",
-                      "sha256":  "dc20882b7f0049580a27287cf1b17b055f18a20eff36d4949c0a95afc9857a5d"
+                      "sha256":  "a547ff72b270ceb93eed0e6086cb27cb8ed0d2151fa621c722cd29447ed864c4"
                   },
                   {
                       "path":  "speakers.json",

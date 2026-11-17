@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,10 +34,11 @@ fun HomeScreen(
             RoundButton(onClick = onNotebook, icon = { NotebookIcon() })
         }
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 18.dp, vertical = 6.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            items(scenes, key = { it.id }) { s ->
+            itemsIndexed(scenes, key = { _, it -> it.id }) { idx, s ->
+                val locked = idx > 0 && scenes[idx - 1].id !in done
                 Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(C.Card)
-                        .border(1.dp, C.Line, RoundedCornerShape(16.dp)).tap { onOpen(s) }.padding(10.dp),
+                    Modifier.fillMaxWidth().graphicsLayer { alpha = if (locked) 0.55f else 1f }.clip(RoundedCornerShape(16.dp)).background(C.Card)
+                        .border(1.dp, C.Line, RoundedCornerShape(16.dp)).tap { if (!locked) onOpen(s) }.padding(10.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     ArtImage(s.color, Modifier.size(96.dp, 80.dp).clip(RoundedCornerShape(8.dp)))
@@ -43,7 +46,7 @@ fun HomeScreen(
                         T("Сцена ${s.id}", 13.sp, C.Ink2, 800)
                         T(s.title, 26.sp, C.Ink, 700, caveat = true, lineHeight = 26.sp)
                         Spacer(Modifier.height(2.dp))
-                        if (s.id in done) T("✓ пройдена", 13.sp, C.Green, 800) else T(s.tags.joinToString(" · "), 13.sp, C.Accent, 700)
+                        if (locked) T("🔒 Сначала пройди сцену ${scenes[idx - 1].id}", 13.sp, C.Ink2, 800) else if (s.id in done) T("✓ пройдена", 13.sp, C.Green, 800) else T(s.tags.joinToString(" · "), 13.sp, C.Accent, 700)
                     }
                 }
             }

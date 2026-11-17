@@ -83,7 +83,7 @@ fun App() {
             screen == "scene" && scene != null -> {
                 val next = scenes.firstOrNull { it.id > scene.id }
                 SceneScreen(
-                    scene, speakers, hasNext = next != null,
+                    scene, speakers, hasNext = next != null, store = progress,
                     onExit = { screen = "home" },
                     onNotebook = { screen = "notebook" },
                     onSaveCard = { scope.launch { progress.addCard(scene.id); progress.markDone(scene.id) } },

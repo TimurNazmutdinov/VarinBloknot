@@ -28,4 +28,37 @@ class Progress(private val ctx: Context) {
     suspend fun appCheckedAt(): Long = ctx.store.data.first()[lastAppCheck] ?: 0L
     suspend fun setContentChecked(t: Long) = ctx.store.edit { it[lastContentCheck] = t }
     suspend fun setAppChecked(t: Long) = ctx.store.edit { it[lastAppCheck] = t }
+
+    /** Что игрок успел сделать в сцене: шаг, покупки, цвета, выбранные ответы. */
+    suspend fun loadScene(id: Int): SceneProgress? =
+        ctx.store.data.first()[stringPreferencesKey("scene_$id")]?.let { SceneProgress.fromJson(it) }
+
+    suspend fun saveScene(id: Int, p: SceneProgress) = ctx.store.edit { it[stringPreferencesKey("scene_$id")] = p.toJson() }
+    suspend fun clearScene(id: Int) = ctx.store.edit { it.remove(stringPreferencesKey("scene_$id")) }
+}
+
+class SceneProgress(
+    val step: Int, val sub: String, val bought: List<String>, val tints: Map<String, Int>, val picks: Map<Int, String>,
+) {
+    fun toJson(): String = org.json.JSONObject().apply {
+        put("step", step); put("sub", sub)
+        put("bought", org.json.JSONArray(bought))
+        put("tints", org.json.JSONObject().also { o -> tints.forEach { (k, v) -> o.put(k, v) } })
+        put("picks", org.json.JSONObject().also { o -> picks.forEach { (k, v) -> o.put(k.toString(), v) } })
+    }.toString()
+
+    companion object {
+        fun fromJson(s: String): SceneProgress? = try {
+            val j = org.json.JSONObject(s)
+            val b = j.optJSONArray("bought")
+            val t = j.optJSONObject("tints")
+            val p = j.optJSONObject("picks")
+            SceneProgress(
+                j.optInt("step"), j.optString("sub", "shop"),
+                List(b?.length() ?: 0) { b!!.getString(it) },
+                t?.keys()?.asSequence()?.associateWith { k -> t.getInt(k) }.orEmpty(),
+                p?.keys()?.asSequence()?.associate { k -> k.toInt() to p.getString(k) }.orEmpty(),
+            )
+        } catch (e: Exception) { null }
+    }
 }

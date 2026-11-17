@@ -9,21 +9,36 @@ import java.io.File
 import java.io.InputStream
 
 data class Speaker(val id: String, val name: String, val avatar: String?, val letter: String?)
+
+/** Предмет магазина (сцены с бюджетом). */
 data class DesignItem(val name: String, val price: Int?, val acc: String, val layers: List<String>)
+
+/** Раскрашиваемый предмет. mode: "tint" — слой заменяется на <layer>_tint; "mask" — поверх слоя рисуется <overlay>. */
+data class PaintObj(val id: String, val label: String, val layer: String, val mode: String, val overlay: String?)
+
 data class Design(
-    val hint: String, val tabs: List<String>, val palette: List<String>,
-    val budget: Int?, val items: List<DesignItem>, val layerNames: Map<String, String>,
+    val hint: String, val palette: List<String>, val budget: Int?,
+    val items: List<DesignItem>, val paint: List<PaintObj>,
+    val shopHint: String, val paintHint: String,
 )
+
 data class Line(val who: String, val text: String, val camera: String, val choices: List<String> = emptyList())
 data class LayerDef(val name: String, val x: Int, val y: Int, val w: Int, val h: Int, val tint: String?)
 data class SceneArt(val width: Int, val height: Int, val layers: List<LayerDef>)
 data class CharDef(val id: String, val file: String, val relHeight: Float, val w: Int, val h: Int)
+
+/** Карточка игры «Нужно или хочется?». */
+data class SortItem(val name: String, val bin: String, val why: String, val hint: String, val caption: String, val emoji: String)
+
 data class Task(
-    val type: String, val title: String,
+    val type: String, val title: String, val question: String = "",
     val limit: Int = 0, val budgetItems: List<Pair<String, Int>> = emptyList(),
-    val bins: List<String> = emptyList(), val sortItems: List<Pair<String, String>> = emptyList(),
-    val options: List<String> = emptyList(), val correct: Int = 0, val explain: String = "",
+    val bins: List<String> = emptyList(), val sortItems: List<SortItem> = emptyList(),
+    val options: List<String> = emptyList(), val correct: Int = 0, val explain: String = "", val hint: String = "",
+    // type = "plan": задание из чисел игрока
+    val priority: List<String> = emptyList(), val texts: Map<String, String> = emptyMap(),
 )
+
 data class Card(val subject: String, val title: String, val art: String, val text: String, val example: String)
 data class Scene(
     val id: Int, val title: String, val tags: List<String>, val story: String,
@@ -34,27 +49,41 @@ data class Scene(
 
 private fun JSONArray.strings() = List(length()) { getString(it) }
 
+private fun parseSortItem(a: JSONArray, i: Int): SortItem {
+    val o = a.get(i)
+    if (o is JSONObject) {
+        return SortItem(o.getString("name"), o.getString("bin"), o.optString("why"), o.optString("hint"), o.optString("caption"), o.optString("emoji"))
+    }
+    val p = o as JSONArray
+    return SortItem(p.getString(0), p.getString(1), p.optString(2), p.optString(3), p.optString(4), p.optString(5))
+}
+
 fun parseScene(text: String): Scene {
     val j = JSONObject(text)
     val d = j.getJSONObject("design")
+    val items = d.optJSONArray("items")?.let { a ->
+        List(a.length()) {
+            val o = a.getJSONObject(it)
+            DesignItem(o.getString("name"), if (o.isNull("price")) null else o.getInt("price"),
+                o.optString("acc", o.getString("name").lowercase()), o.optJSONArray("layers")?.strings().orEmpty())
+        }
+    }.orEmpty()
+    val paint = d.optJSONArray("paint")?.let { a ->
+        List(a.length()) {
+            val o = a.getJSONObject(it)
+            PaintObj(o.getString("id"), o.getString("label"), o.getString("layer"), o.optString("mode", "tint"), o.optString("overlay").ifEmpty { null })
+        }
+    }.orEmpty()
     val design = Design(
-        d.getString("hint"), d.getJSONArray("tabs").strings(), d.getJSONArray("palette").strings(),
-        if (d.isNull("budget")) null else d.getInt("budget"),
-        d.getJSONArray("items").let { a ->
-            List(a.length()) {
-                val o = a.getJSONObject(it)
-                DesignItem(o.getString("name"), if (o.isNull("price")) null else o.getInt("price"),
-                    o.optString("acc", o.getString("name").lowercase()),
-                    o.optJSONArray("layers")?.strings().orEmpty())
-            }
-        },
-        d.optJSONObject("layerNames")?.let { o -> o.keys().asSequence().associateWith { k -> o.getString(k) } }.orEmpty(),
+        d.optString("hint"), d.getJSONArray("palette").strings(),
+        if (d.isNull("budget")) null else d.optInt("budget"), items, paint,
+        d.optString("shopHint", "У тебя {budget}. На всё не хватит — выбери самое нужное"),
+        d.optString("paintHint", "Выбери карандаш и нажми на предмет"),
     )
     val dl = j.getJSONArray("dialog").let { a ->
         List(a.length()) {
             val o = a.getJSONObject(it)
-            Line(o.getString("who"), o.optString("text"), o.optString("camera", "wide"),
-                o.optJSONArray("choices")?.strings().orEmpty())
+            Line(o.getString("who"), o.optString("text"), o.optString("camera", "wide"), o.optJSONArray("choices")?.strings().orEmpty())
         }
     }
     val t = j.getJSONObject("task")
@@ -64,12 +93,12 @@ fun parseScene(text: String): Scene {
             budgetItems = t.getJSONArray("items").let { a ->
                 List(a.length()) { a.getJSONArray(it).let { p -> p.getString(0) to p.getInt(1) } }
             })
-        "sort" -> Task(type, t.getString("title"), bins = t.getJSONArray("bins").strings(),
-            sortItems = t.getJSONArray("items").let { a ->
-                List(a.length()) { a.getJSONArray(it).let { p -> p.getString(0) to p.getString(1) } }
-            })
-        else -> Task(type, t.getString("title"), options = t.getJSONArray("options").strings(),
-            correct = t.getInt("correct"), explain = t.optString("explain"))
+        "sort" -> Task(type, t.getString("title"), t.optString("question"), bins = t.getJSONArray("bins").strings(),
+            sortItems = t.getJSONArray("items").let { a -> List(a.length()) { parseSortItem(a, it) } })
+        "plan" -> Task(type, t.getString("title"), priority = t.getJSONArray("priority").strings(),
+            texts = t.optJSONObject("texts")?.let { o -> o.keys().asSequence().associateWith { k -> o.getString(k) } }.orEmpty())
+        else -> Task(type, t.getString("title"), t.optString("question"), options = t.getJSONArray("options").strings(),
+            correct = t.getInt("correct"), explain = t.optString("explain"), hint = t.optString("hint"))
     }
     val c = j.getJSONObject("card")
     val card = Card(c.getString("subject"), c.getString("title"), c.getString("art"), c.getString("text"), c.getString("example"))
