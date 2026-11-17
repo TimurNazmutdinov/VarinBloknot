@@ -374,7 +374,7 @@ private fun LiveStep(
     val waiting = line.choices.isNotEmpty()
     val text = scene.fill(line.text, st)
 
-    val zoom = if (line.camera.startsWith("zoom")) 1.5f else 1f
+    val zoom = 1f   // наезды камеры отключены: закрывали лица героев
     val avgX = if (scene.stage.isEmpty()) 0.5f else scene.stage.values.map { it.first }.average().toFloat()
     val area = scene.cameraAreas[line.camera] ?: (avgX to 0.55f)
     val camZoom by animateFloatAsState(zoom, tween(900, easing = FastOutSlowInEasing), label = "z")
