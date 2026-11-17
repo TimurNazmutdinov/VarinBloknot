@@ -27,9 +27,9 @@ import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
-fun TaskStep(task: Task, onDone: () -> Unit) {
+fun TaskStep(task: Task, bought: Set<String>, onDone: () -> Unit) {
     when (task.type) {
-        "budget" -> BudgetTask(task, onDone)
+        "budget" -> BudgetTask(task, bought, onDone)
         "sort" -> SortTask(task, onDone)
         else -> QuizTask(task, onDone)
     }
@@ -46,15 +46,15 @@ private fun TaskHeader(title: String, hint: String) {
 }
 
 @Composable
-private fun BudgetTask(task: Task, onDone: () -> Unit) {
-    val sel = remember { mutableStateListOf<Int>() }
+private fun BudgetTask(task: Task, bought: Set<String>, onDone: () -> Unit) {
+    val sel = remember { mutableStateListOf<Int>().apply { task.budgetItems.forEachIndexed { i, (n, _) -> if (n in bought) add(i) } } }
     var warn by remember { mutableStateOf(false) }
     val sum = sel.sumOf { task.budgetItems[it].second }
     val over = sum > task.limit
     StepLayout(bottom = {
         PrimaryButton("Готово") { if (sel.isEmpty() || over) warn = true else onDone() }
     }) {
-        TaskHeader(task.title, "Выбери, что Варя купит для комнаты. Сумма не должна быть больше бюджета.")
+        TaskHeader(task.title, if (bought.isEmpty()) "Выбери, что Варя купит для комнаты. Сумма не должна быть больше бюджета." else "Вот что ты выбрала для комнаты. Проверь: хватает ли денег? Можно поменять.")
         Column(Modifier.padding(horizontal = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             task.budgetItems.forEachIndexed { i, (name, price) ->
                 val on = i in sel

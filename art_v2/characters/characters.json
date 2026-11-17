@@ -1,0 +1,86 @@
+{
+ "note": "relHeight: рост относительно Вари. Якорь — середина между стоп.",
+ "characters": [
+  {
+   "id": "varya",
+   "name": "Варя",
+   "file": "varya.webp",
+   "relHeight": 1.0,
+   "w": 261,
+   "h": 639,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "mama",
+   "name": "Мама",
+   "file": "mama.webp",
+   "relHeight": 1.38,
+   "w": 272,
+   "h": 799,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "papa",
+   "name": "Папа",
+   "file": "papa.webp",
+   "relHeight": 1.45,
+   "w": 256,
+   "h": 800,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "petya",
+   "name": "Петя",
+   "file": "petya.webp",
+   "relHeight": 1.3,
+   "w": 224,
+   "h": 740,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "katya",
+   "name": "Катя",
+   "file": "katya.webp",
+   "relHeight": 1.0,
+   "w": 270,
+   "h": 676,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "dasha",
+   "name": "Даша",
+   "file": "dasha.webp",
+   "relHeight": 1.0,
+   "w": 260,
+   "h": 637,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "babushka",
+   "name": "Бабушка",
+   "file": "babushka.webp",
+   "relHeight": 1.32,
+   "w": 328,
+   "h": 767,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "dedushka",
+   "name": "Дедушка",
+   "file": "dedushka.webp",
+   "relHeight": 1.4,
+   "w": 261,
+   "h": 766,
+   "anchor": "bottom-center"
+  },
+  {
+   "id": "timosha",
+   "name": "Тимоша",
+   "file": "timosha.webp",
+   "relHeight": 0.4,
+   "w": 226,
+   "h": 248,
+   "anchor": "bottom-center"
+  }
+ ]
+}

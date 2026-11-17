@@ -1,50 +1,358 @@
 {
-    "contentVersion":  1,
-    "minAppVersion":  "0.1.0",
+    "contentVersion":  2,
+    "minAppVersion":  "0.2.0",
     "files":  [
                   {
-                      "path":  "art/desk.webp",
-                      "sha256":  "88aa3c6806c92d100896b2e78712e364818842c3ef54b9bb4c1171e88cae794b"
+                      "path":  "art/characters/babushka.webp",
+                      "sha256":  "17599a0a4e1108cd8c2f87a3f0c01525c589580844603e2c3f16563c3d89efe2"
                   },
                   {
-                      "path":  "art/desk_gray.webp",
-                      "sha256":  "42dbbb332a183747dd416703020e1c3b75895c1d47566602f17dbe1e7351eaac"
+                      "path":  "art/characters/characters.json",
+                      "sha256":  "c34b46b3b0ab4dd0d77f261b562ecb7d47cc94e30dbe42e8b1c6d28eb13bd1d9"
                   },
                   {
-                      "path":  "art/kitchen.webp",
-                      "sha256":  "753c4fcf0696abc5e6bcfdcebbc7c298360535b46b64a45509c3ff2f9f4dc6b8"
+                      "path":  "art/characters/dasha.webp",
+                      "sha256":  "dda2d39cbcea885670d53fb0e967c979b966e65ab19ca50f7c9aa7102dbb8fe9"
                   },
                   {
-                      "path":  "art/kitchen_gray.webp",
-                      "sha256":  "317332a14b3ef3d05ff0a59c7a877750db744fc839df435e2b38867922d0e837"
+                      "path":  "art/characters/dedushka.webp",
+                      "sha256":  "ca138b65beecabf5632a67f3e7d89e5f8adc38d04aa59b1194df205f9806e6c1"
                   },
                   {
-                      "path":  "art/room.webp",
-                      "sha256":  "219b864e64f1bb73c4152a303fd5d75d901e67385183b11fcc85fa663a50f9b0"
+                      "path":  "art/characters/katya.webp",
+                      "sha256":  "352a61cd43ed70d9985976ed458553dfce76b826893bd981351f5f212b47022b"
                   },
                   {
-                      "path":  "art/room_gray.webp",
-                      "sha256":  "d71eecaa29d142bb128aa36fbea82c2315088f3a6e2ef2dd84a623b2db112011"
+                      "path":  "art/characters/mama.webp",
+                      "sha256":  "c7540a89c286e4e5204ba7dc376975770619efa96ca17c03100a741beeed7317"
                   },
                   {
-                      "path":  "art/varya.webp",
-                      "sha256":  "411ba5a8f27602d08c1cd1c044cc04bf9a165360441116cf0fc8edc1974da0b3"
+                      "path":  "art/characters/papa.webp",
+                      "sha256":  "7d0190083b995ebc914331839b5f0645215090be567c6739689d41628e75b3db"
+                  },
+                  {
+                      "path":  "art/characters/petya.webp",
+                      "sha256":  "b07a5c918acb60212550b7231fab63540328c3d33fc5461323f7b68e50a6b617"
+                  },
+                  {
+                      "path":  "art/characters/timosha.webp",
+                      "sha256":  "891381f1ce287d3b079b8038ebe07fe654d2ca59ba93b85a5af84415f8b4606b"
+                  },
+                  {
+                      "path":  "art/characters/varya.webp",
+                      "sha256":  "6eab1dcc380cfd5d02e799225311283eef7e749e36266cc64cc83608de6c7946"
+                  },
+                  {
+                      "path":  "art/scene1_room/full.webp",
+                      "sha256":  "f92f12a8f67988da5622fae4acbff93bd97d8fa5d355af84d573040477de74a4"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers.json",
+                      "sha256":  "919cf8e8a7054e369b03ab7223a405dfcb21eaf02a01816b2c48194c3bbe26e6"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/abazhur.webp",
+                      "sha256":  "c946ea5239ab552b8cd1409c92b8271efbf99524f958b158affc5db002182956"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/ao.webp",
+                      "sha256":  "343ffb03bd1e946f8f43fd33541362a158e47a83b2f8648050edc7615848d3d8"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/background.webp",
+                      "sha256":  "4e8e7f11b6f94f3895626689efef125eefa26a0efb59e1d65f1d1abeffec64d0"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/basket.webp",
+                      "sha256":  "c08926509d5ff26a0c1d40e2ce6ee139300abac4b513fc6b8711003037b47156"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/bed.webp",
+                      "sha256":  "3f731ab4461238b06e4171f8911dd52be042701767e402f62d7925293903c8b9"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/bedfoot.webp",
+                      "sha256":  "a843e516b46cd5b1135020ef99a4bdf84922b2234e5fff4647e5a6788fa7961b"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/bedhead.webp",
+                      "sha256":  "f85dab3df6437f2557b6478e08e1a85298c3361b3f01555731d410d7b6d3f60f"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/books.webp",
+                      "sha256":  "ed85482f9718aa6a289ac3f7f9289c9978f775c0cf4d39a48779c4ae5700d6cc"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/cat.webp",
+                      "sha256":  "217e1932a1d58b31c3c894da4c871d3b647b45789172424a78c1962cd6f6977e"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/ceiling.webp",
+                      "sha256":  "e1bad7971903324cb008b7cb8e4acf46c78373d95abd59893d4af2c10ed0158d"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/chair.webp",
+                      "sha256":  "a6c593dc6c55c1b16810308f4cd3e3e68b8cf099071a8678bd912559af0ae03d"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/clock.webp",
+                      "sha256":  "497c4069d4b0e2d36e5f39f1a064b55781b7811c28d163f8c4ec625c5b29896c"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/curtains.webp",
+                      "sha256":  "40e2188b1f21af811e816eefd217f79e8775978e110928417c6f72ebc7bc9dfa"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/curtains_tint.webp",
+                      "sha256":  "fd2ecd832c6b7291158d8ef88d818a64883758bbf2e5e718bd37fe1ff065f22a"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/desk.webp",
+                      "sha256":  "16bca909f896e2d22613ebd1cf1d56a5b505e4f6db2ebc922db1cc0d286acf49"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/geraniums.webp",
+                      "sha256":  "7be7abdcb700fb63fb8419344862062e62e991baf296841b75ac792fd74c9644"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/globe.webp",
+                      "sha256":  "a00dcd6fcc5e39ee768840f16b66028dca004688b20bffb3db08255c74efc981"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/lamp.webp",
+                      "sha256":  "40b470e6c8efc3dcdc6e2d0e728457070bbc9110779539a5a73975975f91d9d8"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/lampglow.webp",
+                      "sha256":  "aaccc2ecf18a76e710c023128920e43162d898f02a987e5addc92c7b9fca886a"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/mattress.webp",
+                      "sha256":  "c8acaa228b53e4dc3a432c4ff5af964c9154b47d9ca17dc23776d6ea514f527a"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/pictures.webp",
+                      "sha256":  "680c6d3abe400888a34b6bcb98d187441a1167255b4071dfeaba7ce2645000a4"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/pillows.webp",
+                      "sha256":  "43e9949b5738385f982a14f535434817967dae8b10ccbdb9fb855cd471b27b65"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/pillows_tint.webp",
+                      "sha256":  "92defd92037970be1ba56f000e0b77179c4f3bd1440cbf2ac386403ad826d2c9"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/quilt.webp",
+                      "sha256":  "0083c143062509184de76d43cbb46c6848a22b4d00e6e6fc5b738b866ff755c5"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/quilt_tint.webp",
+                      "sha256":  "0f8fe41bf1aa0e7055b20514bd7d83227b1ba35f8e33fe67980765284d1fd59f"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/radiator.webp",
+                      "sha256":  "d94845ea609abf7be8b7e1433b0b277e96aa1c54fea0d9ea51dd4d05c110e052"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/rug.webp",
+                      "sha256":  "a73873fdd7ae882c2b1f6e4b87c3b07ee5dcebee59da66a06f16c11aeead13ec"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/rug_tint.webp",
+                      "sha256":  "f1074dff9108980c49fd96a4205a8a795f865fb651b47b968db02660f7e12b6d"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/shadows.webp",
+                      "sha256":  "141ee0d1ba10ca3ca1d705221dbf35df507882b06fadab8a09c6356e249e5a02"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/shelf.webp",
+                      "sha256":  "68215c037e17aaea3f3f0408f14e3eba0b6e53ace70fbc310c4a608b576b6d7c"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/shoes.webp",
+                      "sha256":  "42f20be2c281bfb36e1ed40ca50affa16efec87603aed2f652de7423673dd6b7"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/varya.webp",
+                      "sha256":  "ed6f2c07082eb155519a3c775b9a4795bc1420d6135fbaa5c0283c7a036d156c"
+                  },
+                  {
+                      "path":  "art/scene1_room/layers/wardrobe.webp",
+                      "sha256":  "1fbf33f3161c0ae45f76367d54a74d6d1576886a811b860e3400d00f5989b0fc"
+                  },
+                  {
+                      "path":  "art/scene2_desk/full.webp",
+                      "sha256":  "3240246d732d1e93cbe44cadba30a7d62d1f819a876f46029bf772dba7342d0c"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers.json",
+                      "sha256":  "aa38d2911c0cd22e14030c4623c55dc4caed92e5e2a2891b03a0b0d22918b1a5"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/ao.webp",
+                      "sha256":  "0995e096bb4098b566fab8db6f274741f6590402f90cae4f204f4411bffbd1b0"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/background.webp",
+                      "sha256":  "a6abe7123874ea87cadf02d4b73c64f7b041187c708338ae0e59eeeb096780e7"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/candy.webp",
+                      "sha256":  "63fedfb45624681d0c009fd914f4d35d4a5a869a989f045bae4dddcf0cf69773"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/catchair.webp",
+                      "sha256":  "41d3f0f3e94dace9eed9e7df4242e9082ebd48a4f15dc0e7f9aec8f8d04be960"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/cup.webp",
+                      "sha256":  "39b447f77db41e9a192d36ad75fc06b536e3458e2aababee5f546ca75f4dd12b"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/curtains.webp",
+                      "sha256":  "41d301067daac67e9bce01f49468c4716b49429fb99b8493ca84074feffdfedf"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/curtains_tint.webp",
+                      "sha256":  "b9d1c742b7a669ac08b48965663bf3404d7b9b360630658c1ae4c5b0a20fe514"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/desk.webp",
+                      "sha256":  "f84901f34995cfa8445e08b31e0d67cf512fbe395485b71b865b2e835e2ffd26"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/lamp.webp",
+                      "sha256":  "d1c00ac49f8e7c33cd1e3432b5fc56423d9fed068b8defb49a9d63919f470d8d"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/lampglow.webp",
+                      "sha256":  "460e23e81b3970f749a4d0c3208394c5b72f832793282d87d12813aa4fa1571a"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/notebook.webp",
+                      "sha256":  "e858d9642190666775b8a0d88fafbd76c6fedbf8f43338d5d06dc9eb7cdf4211"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/piggy.webp",
+                      "sha256":  "93f34d70772ca5acc3a3d3c3e1c9db804807cbcc953c097c105b68de9541f6fa"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/radiator.webp",
+                      "sha256":  "c10a16a4bbeddfdac8310ea7586e3face873d3abc4fd7fe72c00e8979b1d6f76"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/shadows.webp",
+                      "sha256":  "d46c4c3f113836fe9d5bbcac27d1ff0b65e9ed6984f4540d6b4a1005d8efb75f"
+                  },
+                  {
+                      "path":  "art/scene2_desk/layers/shelf.webp",
+                      "sha256":  "569bb94b67aeefbe106b93d1e435a4aa3fbab83b9980d78c99ba7e9be65b8686"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/full.webp",
+                      "sha256":  "ae63fb2838af09999ca250a03cf3d217227fd089551bce0ecdb7918a26899316"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers.json",
+                      "sha256":  "9643538f0894cd000e2f0ac03f15ddce1c350e507eeb741ea08d66c4e61e98e2"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/ao.webp",
+                      "sha256":  "8b2232e39625197410c9e5e562dff4e88666e9021b057cb49e45fb012bd401f7"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/background.webp",
+                      "sha256":  "dcfec41600c453adbd1a66677f21f14e9fd83122e6a57aa7925a00d4b8abece4"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/bowl.webp",
+                      "sha256":  "2ca6f55ba94fdde5ce2372c9c4da86d6bf77f2e391a44096feacbd577ef57669"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/catk.webp",
+                      "sha256":  "66e51fc2072dd718f1d091bc8e295cb511e3b44239c3409e263db1d8dcda7d96"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/ceiling.webp",
+                      "sha256":  "33e13c1ffab86d125a0f1b2de169ca270ca5a94bbf9fe4184a1bc459553f10ca"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/clock.webp",
+                      "sha256":  "d2eedecb1352aadb42b3084959056ef5200b6a653580c1ae4f4c8697c0a9d6e4"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/counter.webp",
+                      "sha256":  "59b7b4eecbeeff76755f31448c2dc74b80045f5b3b2a6f7b9904547c2cda3b37"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/curtains.webp",
+                      "sha256":  "7ee13f5b0be0a6ab4ce5c8b2601cedea1e1b65977e5c7b22767d3b31c105f57c"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/curtains_tint.webp",
+                      "sha256":  "66634d04bd07c78cd5ba21ae5705e987f1bec66aac7ca7439de1f17da7a343ff"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/fridge.webp",
+                      "sha256":  "31d1bb3114343b50d72eb901413f52e1de2289bdd6e4ea14495a7c9e6ed14197"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/kettle.webp",
+                      "sha256":  "5e2168f842e7673c892827e1a63b39526b0f7cdf6cd6c7ba004d6846e3613ba4"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/kshadows.webp",
+                      "sha256":  "57545a0a0beccd2ebe1b54c092fe595532e770eaa4dd2c9b40185289cba934bd"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/lamp.webp",
+                      "sha256":  "cd3828844ab8cdf7cbf6aec58309eb8570be6b9769fa7cb90fda9461ead76476"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/props.webp",
+                      "sha256":  "fb633a1bc77a45b0e75ac36088408131c99775d1275acb56f8067e696c3f354c"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/rail.webp",
+                      "sha256":  "f5b6c8d708f5f3be8f7855ef9d86b0d68f9ee1f775d83ec084e1c0df143b3c60"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/shelf.webp",
+                      "sha256":  "9b96a67f674ff2be230bbf20dcb8068baa9080cc0f9fc3bca8d649a4a20537c0"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/sill.webp",
+                      "sha256":  "3819b46fcc2ba37bd803be5d38e3f6b3b6618a077567a68ce15240b1d707f824"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/stools.webp",
+                      "sha256":  "e91aba0eba6937e230b1cc0978aae7502b5d9d08c799832a4ac80548bc86c3e3"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/stove.webp",
+                      "sha256":  "644531cfbece9bfbf23c36993f8a5920f06834edcb540b0ac5b321aaf5ad2234"
+                  },
+                  {
+                      "path":  "art/scene3_kitchen/layers/table.webp",
+                      "sha256":  "281d3a5feca2fd94a6d34151f1d1c0d555ed11ca875063d6f78391e7279e6cfe"
                   },
                   {
                       "path":  "scenes/scene_01.json",
-                      "sha256":  "474eb87adf721a3549a0451e55a26b2a2d716324a37b890d4dd4bce29d3a7894"
+                      "sha256":  "f69e647a12e8e5a14777e3133b3eccc502d21ff135208979bc8bc7c4f72a8a48"
                   },
                   {
                       "path":  "scenes/scene_02.json",
-                      "sha256":  "83be367b543430ceaff27cb12173cfa9e5d89d8f9e22c11c335f9283de545f67"
+                      "sha256":  "fd6c5602bae407205f36c3c8fbdbafbfc05f97dd08c613450cb596550bffa5a4"
                   },
                   {
                       "path":  "scenes/scene_03.json",
-                      "sha256":  "c1e223bcdcd469966db7b8804a9865ac82e71b207373aa79085c59bfb6d8e2ed"
+                      "sha256":  "dc20882b7f0049580a27287cf1b17b055f18a20eff36d4949c0a95afc9857a5d"
                   },
                   {
                       "path":  "speakers.json",
-                      "sha256":  "e41869de3c8497fc7a59eba62c2a2b1579fdb330d54860e80e9df01a9e53c735"
+                      "sha256":  "ed6759d044f69d50510274ed383c564ea2383a31a6efcb5431fccbde4bf472fd"
                   }
               ]
 }

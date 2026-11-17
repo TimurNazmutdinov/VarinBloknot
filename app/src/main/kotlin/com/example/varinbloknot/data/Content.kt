@@ -9,12 +9,15 @@ import java.io.File
 import java.io.InputStream
 
 data class Speaker(val id: String, val name: String, val avatar: String?, val letter: String?)
-data class DesignItem(val name: String, val price: Int?)
+data class DesignItem(val name: String, val price: Int?, val acc: String, val layers: List<String>)
 data class Design(
     val hint: String, val tabs: List<String>, val palette: List<String>,
-    val budget: Int?, val items: List<DesignItem>,
+    val budget: Int?, val items: List<DesignItem>, val layerNames: Map<String, String>,
 )
-data class Line(val who: String, val text: String, val camera: String)
+data class Line(val who: String, val text: String, val camera: String, val choices: List<String> = emptyList())
+data class LayerDef(val name: String, val x: Int, val y: Int, val w: Int, val h: Int, val tint: String?)
+data class SceneArt(val width: Int, val height: Int, val layers: List<LayerDef>)
+data class CharDef(val id: String, val file: String, val relHeight: Float, val w: Int, val h: Int)
 data class Task(
     val type: String, val title: String,
     val limit: Int = 0, val budgetItems: List<Pair<String, Int>> = emptyList(),
@@ -24,8 +27,9 @@ data class Task(
 data class Card(val subject: String, val title: String, val art: String, val text: String, val example: String)
 data class Scene(
     val id: Int, val title: String, val tags: List<String>, val story: String,
-    val gray: String, val color: String, val design: Design, val dialog: List<Line>,
+    val dir: String, val color: String, val design: Design, val dialog: List<Line>,
     val task: Task, val card: Card, val cameraAreas: Map<String, Pair<Float, Float>>,
+    val stage: Map<String, Pair<Float, Float>>,
 )
 
 private fun JSONArray.strings() = List(length()) { getString(it) }
@@ -39,14 +43,18 @@ fun parseScene(text: String): Scene {
         d.getJSONArray("items").let { a ->
             List(a.length()) {
                 val o = a.getJSONObject(it)
-                DesignItem(o.getString("name"), if (o.isNull("price")) null else o.getInt("price"))
+                DesignItem(o.getString("name"), if (o.isNull("price")) null else o.getInt("price"),
+                    o.optString("acc", o.getString("name").lowercase()),
+                    o.optJSONArray("layers")?.strings().orEmpty())
             }
         },
+        d.optJSONObject("layerNames")?.let { o -> o.keys().asSequence().associateWith { k -> o.getString(k) } }.orEmpty(),
     )
     val dl = j.getJSONArray("dialog").let { a ->
         List(a.length()) {
             val o = a.getJSONObject(it)
-            Line(o.getString("who"), o.getString("text"), o.optString("camera", "wide"))
+            Line(o.getString("who"), o.optString("text"), o.optString("camera", "wide"),
+                o.optJSONArray("choices")?.strings().orEmpty())
         }
     }
     val t = j.getJSONObject("task")
@@ -69,9 +77,13 @@ fun parseScene(text: String): Scene {
     j.optJSONObject("cameraAreas")?.let { o ->
         o.keys().forEach { k -> o.getJSONObject(k).let { areas[k] = it.getDouble("x").toFloat() to it.getDouble("y").toFloat() } }
     }
+    val stage = HashMap<String, Pair<Float, Float>>()
+    j.optJSONObject("stage")?.let { o ->
+        o.keys().forEach { k -> o.getJSONObject(k).let { stage[k] = it.getDouble("x").toFloat() to it.getDouble("y").toFloat() } }
+    }
     val art = j.getJSONObject("art")
     return Scene(j.getInt("id"), j.getString("title"), j.getJSONArray("tags").strings(), j.getString("story"),
-        art.getString("gray"), art.getString("color"), design, dl, task, card, areas)
+        art.getString("dir"), art.getString("color"), design, dl, task, card, areas, stage)
 }
 
 /** Набор контента: либо внутри APK (assets), либо скачанный во внутреннюю память. */
@@ -101,7 +113,24 @@ class ContentSet(private val ctx: Context, private val dir: File?) {
         }
     } catch (e: Exception) { emptyMap() }
 
-    /** Картинки в JSON названы .png, в проекте лежат .webp. */
+    fun sceneArt(dir: String): SceneArt? = try {
+        val j = JSONObject(open("art/$dir/layers.json").bufferedReader().readText())
+        val a = j.getJSONArray("layers")
+        SceneArt(j.getInt("width"), j.getInt("height"), List(a.length()) {
+            val o = a.getJSONObject(it)
+            LayerDef(o.getString("name"), o.getInt("x"), o.getInt("y"), o.getInt("w"), o.getInt("h"), o.optString("tint").ifEmpty { null })
+        })
+    } catch (e: Exception) { null }
+
+    fun characters(): Map<String, CharDef> = try {
+        val a = JSONObject(open("art/characters/characters.json").bufferedReader().readText()).getJSONArray("characters")
+        List(a.length()) {
+            val o = a.getJSONObject(it)
+            CharDef(o.getString("id"), o.getString("file"), o.getDouble("relHeight").toFloat(), o.getInt("w"), o.getInt("h"))
+        }.associateBy { it.id }
+    } catch (e: Exception) { emptyMap() }
+
+    /** Картинки в JSON могут быть названы .png, в проекте лежат .webp. */
     fun bitmap(name: String): Bitmap? = try {
         open("art/" + name.substringBeforeLast('.') + ".webp").use { BitmapFactory.decodeStream(it) }
     } catch (e: Exception) { null }

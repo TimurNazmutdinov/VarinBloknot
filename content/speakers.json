@@ -2,17 +2,48 @@
  "speakers": {
   "varya": {
    "name": "Варя",
-   "avatar": "varya.png"
+   "avatar": "characters/varya.webp",
+   "letter": "В"
   },
   "mama": {
    "name": "Мама",
-   "avatar": null,
+   "avatar": "characters/mama.webp",
    "letter": "М"
   },
   "papa": {
    "name": "Папа",
-   "avatar": null,
+   "avatar": "characters/papa.webp",
    "letter": "П"
+  },
+  "petya": {
+   "name": "Петя",
+   "avatar": "characters/petya.webp",
+   "letter": "П"
+  },
+  "katya": {
+   "name": "Катя",
+   "avatar": "characters/katya.webp",
+   "letter": "К"
+  },
+  "dasha": {
+   "name": "Даша",
+   "avatar": "characters/dasha.webp",
+   "letter": "Д"
+  },
+  "babushka": {
+   "name": "Бабушка",
+   "avatar": "characters/babushka.webp",
+   "letter": "Б"
+  },
+  "dedushka": {
+   "name": "Дедушка",
+   "avatar": "characters/dedushka.webp",
+   "letter": "Д"
+  },
+  "timosha": {
+   "name": "Тимоша",
+   "avatar": "characters/timosha.webp",
+   "letter": "Т"
   }
  }
 }
