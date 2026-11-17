@@ -24,7 +24,9 @@ import com.example.varinbloknot.update.AppRelease
 fun HomeScreen(
     scenes: List<Scene>, done: Set<Int>, status: String,
     onOpen: (Scene) -> Unit, onNotebook: () -> Unit, onCheckUpdates: () -> Unit,
+    onResetScene: (Scene) -> Unit, onResetAll: () -> Unit,
 ) {
+    var askAll by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().background(C.Paper).systemBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -47,6 +49,7 @@ fun HomeScreen(
                         T(s.title, 26.sp, C.Ink, 700, caveat = true, lineHeight = 26.sp)
                         Spacer(Modifier.height(2.dp))
                         if (locked) T("🔒 Сначала пройди сцену ${scenes[idx - 1].id}", 13.sp, C.Ink2, 800) else if (s.id in done) T("✓ пройдена", 13.sp, C.Green, 800) else T(s.tags.joinToString(" · "), 13.sp, C.Accent, 700)
+                        if (!locked) Box(Modifier.tap { onResetScene(s) }.padding(vertical = 4.dp)) { T("Пройти заново", 12.sp, C.Ink2, 700, underline = true) }
                     }
                 }
             }
@@ -54,6 +57,17 @@ fun HomeScreen(
         Column(Modifier.fillMaxWidth().padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             if (status.isNotEmpty()) T(status, 13.sp, C.Green, 700)
             Box(Modifier.tap(onCheckUpdates).padding(8.dp)) { T("Версия ${BuildConfig.VERSION_NAME} · Проверить обновления", 13.sp, C.Ink2, 700) }
+            Box(Modifier.tap { askAll = true }.padding(8.dp)) { T("Сбросить прохождение (всё)", 12.sp, C.Ink2, 700, underline = true) }
+        }
+    }
+    if (askAll) Dialog(onDismissRequest = { askAll = false }) {
+        Column(Modifier.clip(RoundedCornerShape(20.dp)).background(C.Paper).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            T("Точно сбросить всё?", 28.sp, C.Ink, 700, caveat = true)
+            T("Пропадут покупки, цвета, ответы, «пройдено» и карточки в блокноте.", 14.sp, C.Ink2, 500)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                SecondaryButton("Нет", Modifier.weight(1f)) { askAll = false }
+                Box(Modifier.weight(1f)) { PrimaryButton("Да, сбросить") { askAll = false; onResetAll() } }
+            }
         }
     }
 }

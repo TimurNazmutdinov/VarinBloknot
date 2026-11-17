@@ -97,6 +97,8 @@ fun App() {
                 onOpen = { sceneId = it.id; screen = "scene" },
                 onNotebook = { screen = "notebook" },
                 onCheckUpdates = { scope.launch { status = "Проверяю…"; status = checkUpdates(true) } },
+                onResetScene = { sc -> scope.launch { progress.resetScene(sc.id); status = "Сцена ${sc.id} сброшена" } },
+                onResetAll = { scope.launch { progress.resetAll(); status = "Прохождение сброшено" } },
             )
         }
         release?.let { r ->

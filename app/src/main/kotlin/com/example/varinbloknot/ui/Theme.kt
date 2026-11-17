@@ -56,6 +56,7 @@ fun T(
     align: TextAlign? = null,
     lineHeight: TextUnit = TextUnit.Unspecified,
     maxLines: Int = Int.MAX_VALUE,
+    underline: Boolean = false,
 ) {
     BasicText(
         text = text,
@@ -69,6 +70,7 @@ fun T(
             color = color,
             textAlign = align ?: TextAlign.Unspecified,
             lineHeight = lineHeight,
+            textDecoration = if (underline) androidx.compose.ui.text.style.TextDecoration.Underline else null,
         ),
     )
 }

@@ -1,6 +1,6 @@
 {
-    "contentVersion":  3,
-    "minAppVersion":  "0.3.0",
+    "contentVersion":  4,
+    "minAppVersion":  "0.3.1",
     "files":  [
                   {
                       "path":  "art/characters/babushka.webp",
@@ -380,7 +380,7 @@
                   },
                   {
                       "path":  "scenes/scene_01.json",
-                      "sha256":  "032027f40e5d8717de842e7e5057b1caea15637147e5c355e74a0424eb5d9a33"
+                      "sha256":  "80edeb6dd22cfb64126761087f58229b0e2fd720d133e7b146190162c56177ae"
                   },
                   {
                       "path":  "scenes/scene_02.json",

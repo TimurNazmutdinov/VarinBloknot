@@ -34,6 +34,7 @@ import com.example.varinbloknot.data.Scene
 import com.example.varinbloknot.data.SceneProgress
 import com.example.varinbloknot.data.Speaker
 import com.example.varinbloknot.logic.Shop
+import com.example.varinbloknot.logic.buildSteps
 import com.example.varinbloknot.logic.fillText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -81,7 +82,9 @@ fun SceneScreen(
         }
     }
     var step by remember(scene.id) { mutableIntStateOf((initial?.step ?: 0).coerceIn(0, 4)) }
-    var sub by remember(scene.id) { mutableStateOf(initial?.sub ?: if (scene.design.items.isNotEmpty()) "shop" else "paint") }
+    var sub by remember(scene.id) {
+        mutableStateOf(initial?.sub ?: if (scene.design.brief != null) "brief" else if (scene.design.items.isNotEmpty()) "shop" else "paint")
+    }
     val picks = remember(scene.id) { mutableStateMapOf<Int, String>().also { m -> initial?.picks?.let { m.putAll(it) } } }
 
     // всё, что игрок сделал, сохраняется само: вышел — вернётся туда же
@@ -97,7 +100,8 @@ fun SceneScreen(
         Box(Modifier.weight(1f)) {
             when (step) {
                 0 -> IntroStep(scene) { step = 1 }
-                1 -> if (assets != null) DesignStep(scene, assets, state, sub, { sub = it }) { step = 2 } else LoadingBox()
+                1 -> if (sub == "brief") BriefStep(scene, speakers) { sub = if (scene.design.items.isNotEmpty()) "shop" else "paint" }
+                    else if (assets != null) DesignStep(scene, assets, state, sub, { sub = it }) { step = 2 } else LoadingBox()
                 2 -> if (assets != null) LiveStep(scene, assets, speakers, state, picks) { step = 3 } else LoadingBox()
                 3 -> TaskStep(scene, state) { step = 4 }
                 else -> CardStep(scene, hasNext, onSaveCard, finish)
@@ -119,6 +123,23 @@ private fun IntroStep(scene: Scene, onStart: () -> Unit) {
             T(scene.title, 46.sp, C.Ink, 700, caveat = true, lineHeight = 48.sp)
             Spacer(Modifier.height(6.dp))
             T(scene.story, 17.sp, C.Ink, 400, lineHeight = 26.sp)
+        }
+    }
+}
+
+/** Поручение героя перед оформлением (мама ставит задачу один раз, до покупок). */
+@Composable
+private fun BriefStep(scene: Scene, speakers: Map<String, Speaker>, onStart: () -> Unit) {
+    val b = scene.design.brief ?: return
+    StepLayout(bottom = { PrimaryButton("Понятно, пойду выбирать →", onClick = onStart) }) {
+        Polaroid(Modifier.padding(top = 6.dp)) { ArtImage(scene.color, Modifier.fillMaxWidth().aspectRatio(1.6f)) }
+        Column(
+            Modifier.padding(horizontal = 18.dp, vertical = 10.dp).fillMaxWidth().clip(RoundedCornerShape(18.dp))
+                .background(Color(0xF5FFFAF0)).border(1.5.dp, C.Line, RoundedCornerShape(18.dp)).padding(14.dp),
+        ) {
+            T(speakers[b.who]?.name ?: b.who, 13.sp, C.Accent, 800)
+            Spacer(Modifier.height(4.dp))
+            T("«${scene.fill(b.text, DesignState())}»", 22.sp, C.Ink, 500, caveat = true, lineHeight = 26.sp)
         }
     }
 }
@@ -348,10 +369,12 @@ private fun LiveStep(
 ) {
     var idx by rememberSaveable(scene.id) { mutableIntStateOf(0) }
     var log by remember { mutableStateOf(false) }
-    val lines = scene.dialog
-    val line = lines[idx.coerceIn(0, lines.lastIndex)]
-    val waiting = line.choices.isNotEmpty() && idx !in picks
-    val text = scene.fill(picks[idx] ?: line.text, st)
+    val steps = buildSteps(scene.dialog, picks, scene.design.budget, scene.design.items, st.bought)
+    if (steps.isEmpty()) { LaunchedEffect(scene.id) { onNext() }; return }
+    val cur = idx.coerceIn(0, steps.lastIndex)
+    val line = steps[cur]
+    val waiting = line.choices.isNotEmpty()
+    val text = scene.fill(line.text, st)
 
     val zoom = if (line.camera.startsWith("zoom")) 1.5f else 1f
     val avgX = if (scene.stage.isEmpty()) 0.5f else scene.stage.values.map { it.first }.average().toFloat()
@@ -372,7 +395,7 @@ private fun LiveStep(
         }.toMap()
     }
     val hidden = scene.hiddenLayers(st) + "varya"
-    val advance: () -> Unit = { if (!waiting) { if (idx < lines.lastIndex) idx++ else onNext() } }
+    val advance: () -> Unit = { if (!waiting) { if (cur < steps.lastIndex) idx = cur + 1 else onNext() } }
     var bubbleW by remember { mutableIntStateOf(0) }
     var bubbleH by remember { mutableIntStateOf(0) }
     var viewW by remember { mutableIntStateOf(0) }
@@ -408,14 +431,14 @@ private fun LiveStep(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             val who = speakers[line.who]?.name ?: line.who
-            T(if (waiting) "$who скажет… выбери:" else who, 14.sp, C.Accent, 800)
+            T(if (waiting) (if (line.who == "varya") "Ты — Варя. Что ответишь?" else "$who скажет… выбери:") else who, 14.sp, C.Accent, 800)
             if (waiting) {
                 line.choices.forEach { c ->
                     Box(
                         Modifier.fillMaxWidth().heightIn(min = 52.dp).clip(RoundedCornerShape(14.dp)).background(C.Card)
-                            .border(1.5.dp, C.Accent, RoundedCornerShape(14.dp)).tap { picks[idx] = c }.padding(14.dp),
+                            .border(1.5.dp, C.Accent, RoundedCornerShape(14.dp)).tap { picks[line.lineIdx] = c.text }.padding(14.dp),
                         contentAlignment = Alignment.CenterStart,
-                    ) { T("«$c»", 15.sp, C.Ink, 700, lineHeight = 21.sp) }
+                    ) { T("«${c.text}»", 15.sp, C.Ink, 700, lineHeight = 21.sp) }
                 }
             } else {
                 T("«$text»", 16.sp, C.Ink, 400, lineHeight = 23.sp)
@@ -423,15 +446,15 @@ private fun LiveStep(
         }
         Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             RoundButton(size = 52, onClick = { log = true }) { T("☰", 18.sp, C.Ink, 800) }
-            Box(Modifier.weight(1f)) { PrimaryButton(if (idx < lines.lastIndex) "Дальше" else "К заданию", enabled = !waiting, onClick = advance) }
+            Box(Modifier.weight(1f)) { PrimaryButton(if (cur < steps.lastIndex) "Дальше" else "К заданию", enabled = !waiting, onClick = advance) }
         }
     }
     if (log) Dialog(onDismissRequest = { log = false }) {
         Column(Modifier.clip(RoundedCornerShape(20.dp)).background(C.Paper).padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             T("Что говорили", 28.sp, C.Ink, 700, caveat = true)
-            for (i in 0..idx) {
-                val l = lines[i]
-                val t = scene.fill(picks[i] ?: l.text, st)
+            for (i in 0..cur) {
+                val l = steps[i]
+                val t = scene.fill(l.text, st)
                 if (t.isNotEmpty()) Column {
                     T(speakers[l.who]?.name ?: l.who, 13.sp, C.Accent, 800)
                     T("«$t»", 15.sp, C.Ink, 400, lineHeight = 21.sp)

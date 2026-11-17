@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8"><title>Диалоги и сброс</title>
+<style>
+:root{--paper:#f6efe0;--ink:#3d2f27;--ink2:#6b5a4c;--amb:#e8a53a;--line:#e2d5bd;--card:#fffaf0}
+body{margin:0;padding:16px;background:#e9dfca;font:14px sans-serif;color:var(--ink);display:flex;gap:16px;flex-wrap:wrap}
+.ph{width:260px;height:520px;background:var(--paper);border-radius:18px;border:2px solid var(--line);position:relative;overflow:hidden}
+.ph h3{margin:0;padding:10px;font-size:13px;text-align:center;background:var(--card)}
+.art{position:absolute;top:36px;left:0;right:0;height:250px;background:#d9c7a3;display:flex;align-items:center;justify-content:center;color:var(--ink2)}
+.bub{position:absolute;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:8px 10px;font-size:13px}
+.bub b{display:block;font-size:11px;color:var(--ink2)}
+.bot{position:absolute;left:0;right:0;bottom:0;padding:12px;background:var(--card);border-top:2px solid var(--line)}
+.btn{display:block;text-align:center;background:var(--amb);border-radius:12px;padding:10px;margin-top:8px;font-weight:bold}
+.opt{background:#fff;border:2px solid var(--amb);border-radius:12px;padding:9px;margin-top:8px}
+.sm{font-size:11px;color:var(--ink2);text-align:center;margin-top:10px;text-decoration:underline}
+.cap{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:11px;color:var(--ink2)}
+</style>
+<div class="ph"><h3>1. Заставка (до покупок)</h3>
+<div class="art">комната без людей<br>+ Варя и мама</div>
+<div class="bub" style="top:60px;left:30px;right:30px"><b>Мама</b>На ремонт у нас 5 000 ₽. Реши сама, что купить первым.</div>
+<div class="bot"><div class="btn">Понятно, пойду выбирать →</div></div></div>
+
+<div class="ph"><h3>2. Живая сцена: выбор Вари</h3>
+<div class="art">комната, Варя и мама</div>
+<div class="bub" style="top:56px;left:20px;right:60px"><b>Мама</b>Ты купила лампу и полку. Осталось 2 300 ₽. А почему именно это?</div>
+<div class="bot"><div style="font-size:12px;color:var(--ink2)">Ты — Варя. Что ответишь?</div>
+<div class="opt">Это нужно каждый день</div>
+<div class="opt">Это было самое красивое</div>
+<div class="opt">Остаток отложу на шторы</div></div></div>
+
+<div class="ph"><h3>3. Главный экран и сцена: сброс</h3>
+<div class="art" style="height:150px">список сцен 1, 2, 3</div>
+<div class="bub" style="top:200px;left:20px;right:20px;background:var(--card)">Сцена 1 · пройдена<div class="btn" style="padding:6px">Пройти заново</div></div>
+<div class="bot"><div class="btn" style="background:#fff;border:2px solid var(--line)">Проверить обновления</div>
+<div class="sm">Сбросить прохождение (всё)</div>
+<div class="sm" style="color:#b44">«Точно сбросить всё? [Да] [Нет]»</div></div></div>

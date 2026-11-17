@@ -35,6 +35,18 @@ class Progress(private val ctx: Context) {
 
     suspend fun saveScene(id: Int, p: SceneProgress) = ctx.store.edit { it[stringPreferencesKey("scene_$id")] = p.toJson() }
     suspend fun clearScene(id: Int) = ctx.store.edit { it.remove(stringPreferencesKey("scene_$id")) }
+
+    /** Тест: начать одну сцену заново (прогресс, «пройдено», карточка). */
+    suspend fun resetScene(id: Int) = ctx.store.edit {
+        it.remove(stringPreferencesKey("scene_$id"))
+        it[doneKey] = it[doneKey].orEmpty() - id.toString()
+        it[cardsKey] = it[cardsKey].orEmpty() - id.toString()
+    }
+
+    /** Тест: сбросить всё прохождение (проверки обновлений не трогаем). */
+    suspend fun resetAll() = ctx.store.edit { p ->
+        p.asMap().keys.filter { it.name == "done_scenes" || it.name == "cards" || it.name.startsWith("scene_") }.forEach { p.remove(it) }
+    }
 }
 
 class SceneProgress(

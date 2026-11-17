@@ -145,4 +145,43 @@ class LogicTest {
         val p = nearestOpaque(100, 40, 50, 20) { x, _ -> x < 10 || x >= 90 }!!
         assertTrue(p.first < 10 || p.first >= 90)
     }
+
+    // --- диалог: условия и порядок реплик ---
+    @Test fun cond_basic() {
+        val b = listOf("Лампа")
+        assertTrue(evalCond("", 5000, items, b))
+        assertTrue(evalCond("bought:Лампа&left>=3000", 5000, items, b))
+        assertFalse(evalCond("bought:Полка", 5000, items, b))
+        assertTrue(evalCond("none", 5000, items, emptyList()))
+        assertTrue(evalCond("some&unbought", 5000, items, b))
+        assertFalse(evalCond("left>3500", 5000, items, b))
+    }
+
+    private val dialog = listOf(
+        com.example.varinbloknot.data.Line("mama", "", "wide", variants = listOf(
+            com.example.varinbloknot.data.Variant("some", "Купила {bought}."), com.example.varinbloknot.data.Variant("none", "Ничего?"))),
+        com.example.varinbloknot.data.Line("varya", "", "wide", choices = listOf(
+            com.example.varinbloknot.data.Choice("А", "", "mama", "Ответ А"),
+            com.example.varinbloknot.data.Choice("Б", "left>9999", "mama", "Ответ Б"))),
+        com.example.varinbloknot.data.Line("mama", "Итог", "wide", cond = "unbought"),
+    )
+
+    @Test fun steps_waitForChoice_thenReply() {
+        val s1 = buildSteps(dialog, emptyMap(), 5000, items, listOf("Лампа"))
+        assertEquals(2, s1.size)                      // реплика + ожидание выбора (вариант Б скрыт условием)
+        assertEquals(1, s1[1].choices.size)
+        val s2 = buildSteps(dialog, mapOf(1 to "А"), 5000, items, listOf("Лампа"))
+        assertEquals(listOf("Купила {bought}.", "Ответ А", "Итог"), s2.map { it.text })
+    }
+
+    @Test fun steps_skipByCond_andNothingBought() {
+        val all = items.map { it.name }
+        val s = buildSteps(dialog, mapOf(1 to "А"), 5000, items, all)   // всё куплено: «Итог» пропущен
+        assertEquals(listOf("Купила {bought}.", "Ответ А"), s.map { it.text })
+        assertEquals("Ничего?", buildSteps(dialog, emptyMap(), 5000, items, emptyList())[0].text)
+    }
+
+    @Test fun fill_notBought() {
+        assertEquals("коврик и шторы", fillText("{notBought}", 5000, items, listOf("Лампа", "Полка")))
+    }
 }

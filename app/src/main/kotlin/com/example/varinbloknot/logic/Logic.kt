@@ -1,6 +1,8 @@
 package com.example.varinbloknot.logic
 
+import com.example.varinbloknot.data.Choice
 import com.example.varinbloknot.data.DesignItem
+import com.example.varinbloknot.data.Line
 import com.example.varinbloknot.data.SortItem
 import com.example.varinbloknot.data.Task
 import kotlin.math.abs
@@ -42,8 +44,62 @@ fun fillText(text: String, budget: Int?, items: List<DesignItem>, bought: Collec
     val boughtItems = items.filter { it.name in bought }
     return text
         .replace("{bought}", if (boughtItems.isEmpty()) "пока ничего" else joinRu(boughtItems.map { it.acc }))
+        .replace("{notBought}", joinRu(items.filter { it.price != null && it.name !in bought }.map { it.acc }))
         .replace("{left}", formatMoney(Shop.left(budget, items, bought)))
         .replace("{spent}", formatMoney(Shop.spent(items, bought)))
+}
+
+// ---------- диалог: условия и порядок реплик ----------
+
+/**
+ * Условие показа реплики. Пусто — всегда. Части через «&» (все должны выполняться):
+ * bought:Лампа / !bought:Лампа, none (ничего не куплено), some (что-то куплено),
+ * unbought (есть некупленное), left>=1000, left>0, left<1000, left==0.
+ */
+fun evalCond(cond: String, budget: Int?, items: List<DesignItem>, bought: Collection<String>): Boolean {
+    if (cond.isBlank()) return true
+    val left = Shop.left(budget, items, bought)
+    return cond.split("&").map { it.trim() }.all { t ->
+        when {
+            t == "none" -> bought.isEmpty()
+            t == "some" -> bought.isNotEmpty()
+            t == "unbought" -> items.any { it.price != null && it.name !in bought }
+            t.startsWith("!bought:") -> t.removePrefix("!bought:") !in bought
+            t.startsWith("bought:") -> t.removePrefix("bought:") in bought
+            t.startsWith("left") -> {
+                val m = Regex("""left(>=|<=|>|<|==)(-?\d+)""").matchEntire(t)
+                if (m == null) false else {
+                    val n = m.groupValues[2].toInt()
+                    when (m.groupValues[1]) { ">=" -> left >= n; "<=" -> left <= n; ">" -> left > n; "<" -> left < n; else -> left == n }
+                }
+            }
+            else -> false
+        }
+    }
+}
+
+/** Один шаг диалога на экране. lineIdx — номер реплики в сценарии (ключ для выбора игрока). */
+class DlgStep(val who: String, val text: String, val camera: String, val choices: List<Choice>, val lineIdx: Int)
+
+/**
+ * Собирает реплики под то, что сделал игрок: пропускает реплики с невыполненным условием,
+ * выбирает нужный вариант текста, после выбора игрока добавляет ответную реплику.
+ * Шаг с выбором без ответа (picks) — последний: дальше идти нельзя, пока не выберет.
+ */
+fun buildSteps(lines: List<Line>, picks: Map<Int, String>, budget: Int?, items: List<DesignItem>, bought: Collection<String>): List<DlgStep> {
+    val out = ArrayList<DlgStep>()
+    lines.forEachIndexed { i, l ->
+        if (!evalCond(l.cond, budget, items, bought)) return@forEachIndexed
+        val text = l.variants.firstOrNull { evalCond(it.cond, budget, items, bought) }?.text ?: l.text
+        val ch = l.choices.filter { evalCond(it.cond, budget, items, bought) }
+        if (ch.isEmpty() && text.isBlank()) return@forEachIndexed
+        if (ch.isEmpty()) { out.add(DlgStep(l.who, text, l.camera, emptyList(), i)); return@forEachIndexed }
+        if (text.isNotBlank()) out.add(DlgStep(l.who, text, l.camera, emptyList(), i))
+        val picked = ch.firstOrNull { it.text == picks[i] }
+        if (picked == null) { out.add(DlgStep(l.who, "", l.camera, ch, i)); return out }
+        if (picked.replyText.isNotBlank()) out.add(DlgStep(picked.replyWho.ifBlank { l.who }, picked.replyText, l.camera, emptyList(), i))
+    }
+    return out
 }
 
 // ---------- задание «Сколько накопить?» ----------

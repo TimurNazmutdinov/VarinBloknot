@@ -19,10 +19,18 @@ data class PaintObj(val id: String, val label: String, val layer: String, val mo
 data class Design(
     val hint: String, val palette: List<String>, val budget: Int?,
     val items: List<DesignItem>, val paint: List<PaintObj>,
-    val shopHint: String, val paintHint: String,
+    val shopHint: String, val paintHint: String, val brief: Brief? = null,
 )
 
-data class Line(val who: String, val text: String, val camera: String, val choices: List<String> = emptyList())
+data class Variant(val cond: String, val text: String)
+/** Вариант ответа игрока: своя ответная реплика (replyWho/replyText). cond — когда вариант показывать. */
+data class Choice(val text: String, val cond: String, val replyWho: String, val replyText: String)
+/** cond — условие показа реплики (см. Dialog.kt); variants — тексты на разные случаи. */
+data class Line(
+    val who: String, val text: String, val camera: String, val choices: List<Choice> = emptyList(),
+    val cond: String = "", val variants: List<Variant> = emptyList(),
+)
+data class Brief(val who: String, val text: String)
 data class LayerDef(val name: String, val x: Int, val y: Int, val w: Int, val h: Int, val tint: String?)
 data class SceneArt(val width: Int, val height: Int, val layers: List<LayerDef>)
 data class CharDef(val id: String, val file: String, val relHeight: Float, val w: Int, val h: Int)
@@ -79,11 +87,24 @@ fun parseScene(text: String): Scene {
         if (d.isNull("budget")) null else d.optInt("budget"), items, paint,
         d.optString("shopHint", "У тебя {budget}. На всё не хватит — выбери самое нужное"),
         d.optString("paintHint", "Выбери карандаш и нажми на предмет"),
+        d.optJSONObject("brief")?.let { Brief(it.getString("who"), it.getString("text")) },
     )
     val dl = j.getJSONArray("dialog").let { a ->
         List(a.length()) {
             val o = a.getJSONObject(it)
-            Line(o.getString("who"), o.optString("text"), o.optString("camera", "wide"), o.optJSONArray("choices")?.strings().orEmpty())
+            val ch = o.optJSONArray("choices")?.let { c ->
+                List(c.length()) { k ->
+                    val x = c.get(k)
+                    if (x is JSONObject) {
+                        val r = x.optJSONObject("reply")
+                        Choice(x.getString("text"), x.optString("if"), r?.optString("who").orEmpty(), r?.optString("text").orEmpty())
+                    } else Choice(x.toString(), "", "", "")
+                }
+            }.orEmpty()
+            val vr = o.optJSONArray("variants")?.let { v ->
+                List(v.length()) { k -> v.getJSONObject(k).let { Variant(it.optString("if"), it.getString("text")) } }
+            }.orEmpty()
+            Line(o.getString("who"), o.optString("text"), o.optString("camera", "wide"), ch, o.optString("if"), vr)
         }
     }
     val t = j.getJSONObject("task")
