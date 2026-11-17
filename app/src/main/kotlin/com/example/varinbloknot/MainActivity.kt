@@ -12,6 +12,7 @@ import com.example.varinbloknot.update.AppRelease
 import com.example.varinbloknot.update.AppUpdater
 import com.example.varinbloknot.update.ContentUpdater
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -38,6 +39,9 @@ fun App() {
     var release by remember { mutableStateOf<AppRelease?>(null) }
     var busy by remember { mutableStateOf(false) }
     var updError by remember { mutableStateOf<String?>(null) }
+    var dlDone by remember { mutableStateOf(0L) }
+    var dlTotal by remember { mutableStateOf(0L) }
+    var dlJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
     suspend fun reload() {
         val c = withContext(Dispatchers.IO) { ContentStore.load(ctx) }
@@ -96,16 +100,22 @@ fun App() {
             )
         }
         release?.let { r ->
-            UpdateDialog(r, busy, updError, onUpdate = {
-                scope.launch {
-                    busy = true; updError = null
+            UpdateDialog(r, busy, updError, dlDone, dlTotal, onUpdate = {
+                dlJob = scope.launch {
+                    busy = true; updError = null; dlDone = 0; dlTotal = r.size
                     try {
-                        val f = withContext(Dispatchers.IO) { AppUpdater.download(ctx, r) }
+                        val f = withContext(Dispatchers.IO) {
+                            AppUpdater.download(ctx, r, { !isActive }) { d, t -> dlDone = d; dlTotal = t }
+                        }
                         AppUpdater.install(ctx, f)
-                    } catch (e: Exception) { updError = "Не удалось скачать. Проверь интернет." }
+                    } catch (e: kotlinx.coroutines.CancellationException) {
+                        updError = null
+                    } catch (e: Exception) {
+                        updError = "Не удалось скачать (медленная или оборванная связь). Можно повторить: скачивание продолжится с того же места."
+                    }
                     busy = false
                 }
-            }, onLater = { release = null })
+            }, onCancel = { dlJob?.cancel(); busy = false }, onBrowser = { AppUpdater.openInBrowser(ctx, r) }, onLater = { release = null })
         }
     }
 }

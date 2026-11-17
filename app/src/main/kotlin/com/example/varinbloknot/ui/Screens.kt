@@ -75,7 +75,10 @@ fun NotebookScreen(scenes: List<Scene>, cards: Set<Int>, onBack: () -> Unit) {
 }
 
 @Composable
-fun UpdateDialog(release: AppRelease, busy: Boolean, error: String?, onUpdate: () -> Unit, onLater: () -> Unit) {
+fun UpdateDialog(
+    release: AppRelease, busy: Boolean, error: String?, done: Long, total: Long,
+    onUpdate: () -> Unit, onCancel: () -> Unit, onBrowser: () -> Unit, onLater: () -> Unit,
+) {
     Dialog(onDismissRequest = { if (!busy) onLater() }) {
         Column(
             Modifier.clip(RoundedCornerShape(20.dp)).background(C.Paper).border(1.dp, C.Line, RoundedCornerShape(20.dp)).padding(22.dp),
@@ -83,12 +86,27 @@ fun UpdateDialog(release: AppRelease, busy: Boolean, error: String?, onUpdate: (
         ) {
             T("Есть новая версия", 30.sp, C.Ink, 700, caveat = true)
             T("Версия ${release.version} (сейчас ${BuildConfig.VERSION_NAME}). Обновить?", 16.sp, C.Ink, 600)
-            if (release.notes.isNotBlank()) T(release.notes.trim().take(400), 14.sp, C.Ink2, 400)
+            if (release.notes.isNotBlank() && !busy) T(release.notes.trim().take(400), 14.sp, C.Ink2, 400)
+            if (busy) {
+                val frac = if (total > 0) (done.toFloat() / total).coerceIn(0f, 1f) else 0f
+                T(
+                    if (total > 0) "Скачиваю: %.1f из %.1f МБ (%d%%)".format(done / 1048576f, total / 1048576f, (frac * 100).toInt()) else "Скачиваю…",
+                    15.sp, C.Accent, 800,
+                )
+                Box(Modifier.fillMaxWidth().height(10.dp).clip(RoundedCornerShape(5.dp)).background(C.Line)) {
+                    Box(Modifier.fillMaxHeight().fillMaxWidth(frac).background(C.Accent))
+                }
+                T("GitHub отдаёт файл небыстро, это нормально. Подожди, пока полоса дойдёт до конца.", 12.sp, C.Ink2, 600)
+            }
             if (error != null) T(error, 14.sp, C.Red, 700)
-            if (busy) T("Скачиваю…", 15.sp, C.Accent, 800)
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                SecondaryButton("Позже", Modifier.weight(1f)) { if (!busy) onLater() }
-                Box(Modifier.weight(1f)) { PrimaryButton("Обновить", enabled = !busy, onClick = onUpdate) }
+            if (busy) {
+                SecondaryButton("Отмена", Modifier.fillMaxWidth(), onCancel)
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    SecondaryButton("Позже", Modifier.weight(1f), onLater)
+                    Box(Modifier.weight(1f)) { PrimaryButton(if (error != null) "Повторить" else "Обновить", onClick = onUpdate) }
+                }
+                if (error != null) SecondaryButton("Скачать в браузере", Modifier.fillMaxWidth(), onBrowser)
             }
         }
     }

@@ -129,7 +129,7 @@ object ContentUpdater {
     }
 }
 
-data class AppRelease(val version: String, val notes: String, val apkUrl: String)
+data class AppRelease(val version: String, val notes: String, val apkUrl: String, val size: Long = 0, val sha256: String = "", val pageUrl: String = "")
 
 object AppUpdater {
     /** Возвращает (проверка была выполнена, найденная новая версия или null). */
@@ -141,24 +141,81 @@ object AppUpdater {
             val tag = j.getString("tag_name")
             val assets = j.getJSONArray("assets")
             var apk: String? = null
+            var size = 0L
+            var sha = ""
             for (i in 0 until assets.length()) {
                 val a = assets.getJSONObject(i)
-                if (a.getString("name").endsWith(".apk")) apk = a.getString("browser_download_url")
+                if (a.getString("name").endsWith(".apk")) {
+                    apk = a.getString("browser_download_url")
+                    size = a.optLong("size")
+                    sha = a.optString("digest").removePrefix("sha256:")
+                }
             }
-            if (apk != null && isNewer(tag, BuildConfig.VERSION_NAME)) true to AppRelease(tag.removePrefix("v"), j.optString("body"), apk)
+            if (apk != null && isNewer(tag, BuildConfig.VERSION_NAME))
+                true to AppRelease(tag.removePrefix("v"), j.optString("body"), apk, size, sha, j.optString("html_url"))
             else true to null
         } catch (e: Exception) { true to null }
     }
 
-    fun download(ctx: Context, r: AppRelease): File {
-        val dir = File(ctx.cacheDir, "updates").apply { deleteRecursively(); mkdirs() }
+    /**
+     * Скачать APK с докачкой при обрыве (до 4 попыток), прогрессом и проверкой SHA-256.
+     * Файл с GitHub отдаётся медленно (десятки КБ/с), поэтому важно показывать прогресс.
+     */
+    fun download(ctx: Context, r: AppRelease, cancelled: () -> Boolean, onProgress: (done: Long, total: Long) -> Unit): File {
+        val dir = File(ctx.cacheDir, "updates").apply { mkdirs() }
         val f = File(dir, "VarinBloknot-${r.version}.apk")
-        val c = http(r.apkUrl)
-        try {
-            if (c.responseCode != 200) error("HTTP ${c.responseCode}")
-            c.inputStream.use { i -> f.outputStream().use { o -> i.copyTo(o) } }
-        } finally { c.disconnect() }
-        return f
+        dir.listFiles()?.filter { it != f }?.forEach { it.delete() }
+        var attempt = 0
+        while (true) {
+            try {
+                var have = if (f.exists()) f.length() else 0L
+                if (r.size > 0 && have > r.size) { f.delete(); have = 0 }
+                if (r.size == 0L || have < r.size) {
+                    val c = http(r.apkUrl)
+                    c.readTimeout = 30_000
+                    if (have > 0) c.setRequestProperty("Range", "bytes=$have-")
+                    try {
+                        val code = c.responseCode
+                        if (code != 200 && code != 206) error("HTTP $code")
+                        val append = code == 206 && have > 0
+                        val start = if (append) have else 0L
+                        val len = c.contentLengthLong
+                        val total = if (r.size > 0) r.size else if (len > 0) start + len else 0L
+                        var done = start
+                        var last = 0L
+                        java.io.FileOutputStream(f, append).use { o ->
+                            c.inputStream.use { i ->
+                                val buf = ByteArray(32 * 1024)
+                                while (true) {
+                                    if (cancelled()) throw java.util.concurrent.CancellationException()
+                                    val n = i.read(buf)
+                                    if (n < 0) break
+                                    o.write(buf, 0, n)
+                                    done += n
+                                    val now = System.currentTimeMillis()
+                                    if (now - last > 150) { last = now; onProgress(done, total) }
+                                }
+                            }
+                        }
+                        onProgress(done, total)
+                    } finally { c.disconnect() }
+                }
+                if (r.size > 0 && f.length() != r.size) error("size mismatch")
+                if (r.sha256.isNotEmpty() && sha256(f) != r.sha256.lowercase()) { f.delete(); error("sha256 mismatch") }
+                return f
+            } catch (e: java.util.concurrent.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                if (++attempt >= 4) throw e
+                Thread.sleep(1500)
+            }
+        }
+    }
+
+    /** Запасной путь: открыть страницу релиза в браузере (там скачивание с докачкой). */
+    fun openInBrowser(ctx: Context, r: AppRelease) {
+        val url = r.pageUrl.ifEmpty { "https://github.com/${BuildConfig.REPO}/releases/latest" }
+        ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     }
 
     /** Открыть системное окно установки (или настройку «разрешить установку из этого источника»). */
