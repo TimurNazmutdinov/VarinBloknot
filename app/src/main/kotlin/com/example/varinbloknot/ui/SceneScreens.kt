@@ -214,7 +214,8 @@ private fun DesignStep(scene: Scene, a: SceneAssets, st: DesignState, sub: Strin
                     val obj = layer?.let { paintAt(a, d.paint, it, fx, fy) }
                     when {
                         item != null && Shop.needsBuying(d.budget, item, st.bought) -> {
-                            selItem = item.name; selPaint = null; onSub("shop")
+                            selItem = item.name; selPaint = null
+                            if (sub == "shop") buy(item) else onSub("shop")
                         }
                         sub == "shop" && item != null -> { selItem = item.name; selPaint = null }
                         sub == "shop" -> { selPaint = null; selItem = null; msg = "Здесь ничего не продаётся. Светлые силуэты — то, что можно купить." }
@@ -295,7 +296,7 @@ private fun DesignStep(scene: Scene, a: SceneAssets, st: DesignState, sub: Strin
                         Modifier.width(120.dp).clip(RoundedCornerShape(14.dp))
                             .background(if (own) Color(0xFFEEF5EA) else C.Card)
                             .border(if (sel) 2.5.dp else 1.5.dp, if (sel) C.Accent else if (own) Color(0xFFB9D6AD) else C.Line, RoundedCornerShape(14.dp))
-                            .tap { selItem = it.name; selPaint = null }.padding(6.dp),
+                            .tap { selItem = it.name; selPaint = null; if (own) sell(it) else buy(it) }.padding(6.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Box(Modifier.height(62.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -304,15 +305,12 @@ private fun DesignStep(scene: Scene, a: SceneAssets, st: DesignState, sub: Strin
                         T(it.name, 13.sp, C.Ink, 800)
                         Spacer(Modifier.height(4.dp))
                         val (label, bg, fg) = when {
-                            own && sel -> Triple("Вернуть +" + money(it.price ?: 0), C.Chip, C.Ink)
-                            own -> Triple("✓ куплено", Color.Transparent, C.Green)
-                            sel && can -> Triple("Купить · " + money(it.price ?: 0), C.Accent, Color.White)
-                            sel -> Triple("Не хватает", C.Line, C.Ink2)
-                            else -> Triple(money(it.price ?: 0), C.Chip, if (can) C.Ink else Color(0xFFB0A089))
+                            own -> Triple("✓ куплено · вернуть", Color(0xFFDDEBD5), C.Green)
+                            can -> Triple("Купить · " + money(it.price ?: 0), C.Accent, Color.White)
+                            else -> Triple("Не хватает · " + money(it.price ?: 0), C.Line, C.Ink2)
                         }
                         Box(
-                            Modifier.fillMaxWidth().heightIn(min = 44.dp).clip(RoundedCornerShape(10.dp)).background(bg)
-                                .then(if (sel) Modifier.tap { if (own) sell(it) else buy(it) } else Modifier),
+                            Modifier.fillMaxWidth().heightIn(min = 44.dp).clip(RoundedCornerShape(10.dp)).background(bg),
                             contentAlignment = Alignment.Center,
                         ) { T(label, 13.sp, fg, 800, align = androidx.compose.ui.text.style.TextAlign.Center) }
                     }
