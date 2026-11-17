@@ -1,0 +1,18 @@
+{
+ "speakers": {
+  "varya": {
+   "name": "Варя",
+   "avatar": "varya.png"
+  },
+  "mama": {
+   "name": "Мама",
+   "avatar": null,
+   "letter": "М"
+  },
+  "papa": {
+   "name": "Папа",
+   "avatar": null,
+   "letter": "П"
+  }
+ }
+}

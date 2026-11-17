@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Варианты экрана «Оформление»</title>
+<style>
+:root{--paper:#f6efe0;--cream:#fbf6ea;--ink:#3d2f27;--ink2:#6b5a4c;--accent:#9c3a60;--line:#e2d5bd;--amber:#d9a066}
+*{box-sizing:border-box}
+body{margin:0;padding:24px;background:#eadfc8;font-family:'Segoe UI',system-ui,sans-serif;color:var(--ink)}
+h1{font:600 22px 'Segoe Print','Comic Sans MS',cursive;margin:0 0 4px}
+.sub{color:var(--ink2);margin:0 0 20px;font-size:14px}
+.row{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.col{width:300px}
+.cap{font-weight:700;margin:0 0 2px;font-size:14px}.cap2{font-size:12px;color:var(--ink2);margin:0 0 8px;min-height:48px}
+.ph{width:300px;height:650px;border-radius:26px;background:var(--paper);overflow:hidden;position:relative;box-shadow:0 8px 22px #3d2f2733;border:6px solid #3d2f27}
+.top{height:46px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:11px;font-weight:700;color:var(--ink2)}
+.rb{width:32px;height:32px;border-radius:50%;background:#efe3c9;display:grid;place-items:center;font-size:15px;color:var(--ink)}
+.dots{display:flex;gap:4px;justify-content:center;margin-top:3px}.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--accent)}.dots i.cur{width:16px;border-radius:4px;background:var(--accent)}
+.hand{font-family:'Segoe Print','Comic Sans MS',cursive}
+.seg{display:inline-flex;background:#efe3c9;border-radius:14px;padding:3px;font-size:11px;font-weight:700}
+.seg b{padding:5px 10px;border-radius:11px;color:var(--ink2)}.seg b.on{background:var(--accent);color:#fff;box-shadow:0 1px 3px #0003}
+.btn{height:44px;border-radius:16px;background:var(--accent);color:#fff;font-weight:700;display:grid;place-items:center;font-size:14px}
+.pencil{width:16px;height:76px;border-radius:3px 3px 0 0;position:relative;flex:none}
+.pencil:after{content:"";position:absolute;left:0;top:-14px;border:8px solid transparent;border-bottom:14px solid #e9cfa3;border-top:0;width:0}
+.pencil:before{content:"";position:absolute;left:3px;top:-14px;border:5px solid transparent;border-bottom:8px solid currentColor;border-top:0;z-index:1}
+.card{background:#fffaf0;border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;font-size:11px}
+.card.on{border-color:var(--accent)}.card b{display:block;font-size:12px}.ok{color:#2f6b3f;font-weight:700;font-size:10px}
+.tape{position:absolute;width:56px;height:16px;background:#e9c27c99;transform:rotate(-6deg)}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);flex:none}
+.sw.sel{box-shadow:0 0 0 3px var(--ink)}
+img{display:block}
+</style></head><body>
+<h1>«Оформление» — три варианта + полноэкранная раскраска</h1>
+<p class="sub">Светлая тёплая схема. Во всех вариантах есть переключатель «Обычный / Раскраска» и кнопка во весь экран.</p>
+<div class="row">
+
+<!-- A -->
+<div class="col"><p class="cap">A · «Страница альбома»</p><p class="cap2">Рисунок приклеен скотчем, как фото в альбоме. Цвета — настоящие карандаши в стакане, предметы — стикеры.</p>
+<div class="ph">
+<div class="top"><div class="rb">‹</div><div style="text-align:center">Сцена 1 · Оформление<div class="dots"><i class="on"></i><i class="cur"></i><i></i><i></i><i></i></div></div><div class="rb">📓</div></div>
+<div style="position:relative;margin:10px 16px 0;transform:rotate(-1.2deg);background:#fffdf6;padding:7px 7px 26px;box-shadow:0 3px 10px #3d2f2740">
+<div class="tape" style="left:-14px;top:-6px"></div><div class="tape" style="right:-14px;top:-6px;transform:rotate(7deg)"></div>
+<img src="../../art/room_gray.png" width="254" style="object-fit:cover;height:196px">
+<div class="hand" style="position:absolute;bottom:3px;left:10px;font-size:13px;color:var(--ink2)">Нажми на стену — выбери обои</div>
+<div style="position:absolute;right:12px;top:12px;width:28px;height:28px;border-radius:9px;background:#fffaf0e6;display:grid;place-items:center;font-size:14px">⛶</div></div>
+<div style="text-align:center;margin:12px 0 4px"><span class="seg"><b>Обычный</b><b class="on">Раскраска</b></span></div>
+<div style="display:flex;gap:6px;padding:0 16px;margin-top:6px;font-size:11px;font-weight:700">
+<span style="background:var(--accent);color:#fff;padding:6px 12px;border-radius:12px 12px 0 0">Стены</span><span style="background:#efe3c9;padding:6px 12px;border-radius:12px 12px 0 0">Пол</span><span style="background:#efe3c9;padding:6px 10px;border-radius:12px 12px 0 0">Мебель</span><span style="background:#efe3c9;padding:6px 10px;border-radius:12px 12px 0 0">Декор</span></div>
+<div style="margin:0 12px;padding:14px 10px 0;background:#fbf2dc;border-radius:0 14px 0 0;display:flex;gap:7px;align-items:flex-end;height:96px;overflow:hidden;border-top:2px solid var(--line)">
+<div class="pencil" style="background:#cdc3ee;color:#cdc3ee"></div><div class="pencil" style="background:#e9a0b8;color:#e9a0b8;height:88px"></div><div class="pencil" style="background:#bcd8f0;color:#bcd8f0"></div><div class="pencil" style="background:#c9e2b8;color:#c9e2b8;height:82px"></div><div class="pencil" style="background:#f3e3c4;color:#f3e3c4"></div><div class="pencil" style="background:#d9a066;color:#d9a066;height:84px"></div><div class="pencil" style="background:#9c3a60;color:#9c3a60"></div><div class="pencil" style="background:#6b9a6a;color:#6b9a6a;height:80px"></div></div>
+<div style="display:flex;gap:8px;padding:12px 16px 0">
+<div class="card on" style="transform:rotate(-1.5deg);background:#fff3b8;flex:1"><b>Обои</b>1 800 ₽<div class="ok">✓ на месте</div></div>
+<div class="card" style="transform:rotate(1deg);background:#fbe0e8;flex:1"><b>Лампа</b>1 500 ₽</div>
+<div class="card on" style="transform:rotate(-0.5deg);background:#dcefd5;flex:1"><b>Полка</b>1 200 ₽<div class="ok">✓ на месте</div></div></div>
+<div style="padding:12px 16px 0;font-size:11px;font-weight:700;display:flex;justify-content:space-between"><span>Бюджет 5 000 ₽</span><span style="color:var(--accent)">осталось 2 000 ₽</span></div>
+<div style="margin:4px 16px 0;height:8px;border-radius:5px;background:var(--line)"><div style="width:60%;height:100%;border-radius:5px;background:repeating-linear-gradient(135deg,var(--accent) 0 6px,#b4577b 6px 9px)"></div></div>
+<div class="btn" style="position:absolute;left:16px;right:16px;bottom:14px">Готово, оживить сцену</div>
+</div></div>
+
+<!-- B -->
+<div class="col"><p class="cap">B · «Мастерская»</p><p class="cap2">Рисунок крупнее, снизу выдвижная шторка с пеналом. Тяни шторку вверх — больше места для предметов, вниз — больше рисунка.</p>
+<div class="ph">
+<div style="position:absolute;inset:0"><img src="../../art/room_gray.png" style="width:100%;height:430px;object-fit:cover"></div>
+<div class="top" style="position:relative"><div class="rb" style="background:#fbf6eacc">‹</div><div style="text-align:center;background:#fbf6eacc;padding:3px 10px;border-radius:12px">Сцена 1 · Оформление<div class="dots"><i class="on"></i><i class="cur"></i><i></i><i></i><i></i></div></div><div class="rb" style="background:#fbf6eacc">📓</div></div>
+<div style="position:absolute;left:12px;top:60px"><span class="seg" style="background:#fbf6eae6"><b>Обычный</b><b class="on">Раскраска</b></span></div>
+<div style="position:absolute;right:12px;top:60px;width:30px;height:30px;border-radius:10px;background:#fbf6eae6;display:grid;place-items:center">⛶</div>
+<div style="position:absolute;left:12px;right:12px;top:376px;background:#fffaf0;border-radius:14px;padding:7px 10px;font-size:11px;box-shadow:0 2px 8px #3d2f2733">☝ <span class="hand" style="font-size:13px">Нажми на стену — выбери обои</span></div>
+<div style="position:absolute;left:0;right:0;top:420px;bottom:0;background:var(--paper);border-radius:24px 24px 0 0;box-shadow:0 -6px 16px #3d2f2733;padding:8px 14px">
+<div style="width:40px;height:4px;border-radius:3px;background:var(--line);margin:0 auto 8px"></div>
+<div style="display:flex;gap:6px;font-size:11px;font-weight:700"><span style="background:var(--accent);color:#fff;padding:7px 12px;border-radius:14px">Стены</span><span style="background:#efe3c9;padding:7px 12px;border-radius:14px">Пол</span><span style="background:#efe3c9;padding:7px 12px;border-radius:14px">Мебель</span><span style="background:#efe3c9;padding:7px 12px;border-radius:14px">Декор</span></div>
+<div style="display:flex;gap:7px;margin:10px 0;background:#f0e4c8;padding:8px;border-radius:16px;border:1.5px dashed #cdb98f">
+<div class="sw" style="background:#cdc3ee"></div><div class="sw sel" style="background:#e9a0b8"></div><div class="sw" style="background:#bcd8f0"></div><div class="sw" style="background:#c9e2b8"></div><div class="sw" style="background:#f3e3c4"></div><div class="sw" style="background:#d9a066"></div></div>
+<div style="display:flex;gap:7px"><div class="card on" style="flex:1"><b>Обои</b>1 800 ₽</div><div class="card" style="flex:1"><b>Лампа</b>1 500 ₽</div><div class="card on" style="flex:1"><b>Полка</b>1 200 ₽</div></div>
+<div style="margin-top:10px;font-size:11px;font-weight:700;display:flex;justify-content:space-between"><span>🪙 Бюджет 5 000 ₽</span><span style="color:var(--accent)">осталось 2 000 ₽</span></div>
+<div style="margin-top:4px;height:8px;border-radius:5px;background:var(--line)"><div style="width:60%;height:100%;border-radius:5px;background:var(--accent)"></div></div>
+<div class="btn" style="margin-top:12px">Готово, оживить сцену</div></div>
+</div></div>
+
+<!-- C -->
+<div class="col"><p class="cap">C · «Холст»</p><p class="cap2">Всё внимание на рисунок: он на весь экран, а инструменты — плавающие. Предметы и бюджет прячутся в «Сумку».</p>
+<div class="ph">
+<div style="position:absolute;inset:0;background:#fffdf6"><img src="../../art/room_gray.png" style="width:100%;height:100%;object-fit:cover;object-position:35% 50%"></div>
+<div class="top" style="position:relative"><div class="rb" style="background:#fbf6eacc">‹</div><span class="seg" style="background:#fbf6eae6"><b>Обычный</b><b class="on">Раскраска</b></span><div class="rb" style="background:#fbf6eacc">📓</div></div>
+<div style="position:absolute;left:10px;top:70px;display:flex;flex-direction:column;gap:8px">
+<div class="rb" style="background:var(--accent);color:#fff;width:40px;height:40px;border-radius:14px">▦</div><div class="rb" style="width:40px;height:40px;border-radius:14px;background:#fbf6eae6">▭</div><div class="rb" style="width:40px;height:40px;border-radius:14px;background:#fbf6eae6">🛋</div><div class="rb" style="width:40px;height:40px;border-radius:14px;background:#fbf6eae6">✿</div></div>
+<div style="position:absolute;right:10px;top:70px;display:flex;flex-direction:column;gap:8px"><div class="rb" style="background:#fbf6eae6;width:40px;height:40px;border-radius:14px">⛶</div><div class="rb" style="background:#fbf6eae6;width:40px;height:40px;border-radius:14px">↶</div></div>
+<div style="position:absolute;left:62px;right:62px;top:350px;text-align:center;background:#fffaf0;padding:6px;border-radius:12px;font-size:12px" class="hand">Нажми на стену — выбери обои</div>
+<div style="position:absolute;left:10px;right:10px;bottom:76px;background:#fbf6eaf2;border-radius:22px;padding:10px;display:flex;justify-content:space-around;box-shadow:0 3px 12px #3d2f2744">
+<div class="sw" style="background:#cdc3ee;width:34px;height:34px"></div><div class="sw sel" style="background:#e9a0b8;width:34px;height:34px"></div><div class="sw" style="background:#bcd8f0;width:34px;height:34px"></div><div class="sw" style="background:#c9e2b8;width:34px;height:34px"></div><div class="sw" style="background:#f3e3c4;width:34px;height:34px"></div><div class="sw" style="background:#d9a066;width:34px;height:34px"></div></div>
+<div style="position:absolute;left:10px;right:10px;bottom:14px;display:flex;gap:8px"><div style="flex:1;background:#fffaf0;border-radius:16px;padding:7px 10px;font-size:11px;font-weight:700;box-shadow:0 2px 8px #3d2f2744">👜 Сумка · 3 000 ₽<div style="margin-top:4px;height:6px;border-radius:4px;background:var(--line)"><div style="width:60%;height:100%;border-radius:4px;background:var(--accent)"></div></div></div><div class="btn" style="width:112px;height:auto;font-size:12px;line-height:1.2;text-align:center">Готово, оживить</div></div>
+</div></div>
+
+<!-- Fullscreen -->
+<div class="col"><p class="cap">Полноэкранная раскраска (для A и B)</p><p class="cap2">Кнопка ⛶ открывает рисунок на весь экран: можно увеличивать щипком и красить мелко. Панель сворачивается.</p>
+<div class="ph" style="background:#fffdf6">
+<img src="../../art/room_gray.png" style="width:100%;height:100%;object-fit:cover;object-position:30% 50%;transform:scale(1.5);transform-origin:30% 40%">
+<div style="position:absolute;left:10px;top:12px"><div class="rb" style="background:#fbf6eae6">✕</div></div>
+<div style="position:absolute;left:0;right:0;top:12px;text-align:center"><span class="seg" style="background:#fbf6eae6"><b>Обычный</b><b class="on">Раскраска</b></span></div>
+<div style="position:absolute;right:10px;top:12px" class="rb"><span style="font-size:13px">↶</span></div>
+<div style="position:absolute;right:10px;top:70px;background:#fbf6eae6;border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;gap:10px;align-items:center;font-size:10px;font-weight:700"><span>Кисть</span><i style="width:6px;height:6px;border-radius:50%;background:var(--ink)"></i><i style="width:12px;height:12px;border-radius:50%;background:var(--ink)"></i><i style="width:20px;height:20px;border-radius:50%;background:var(--ink)"></i></div>
+<div style="position:absolute;left:10px;right:10px;bottom:14px;background:#fbf6eaf2;border-radius:22px;padding:10px;box-shadow:0 3px 12px #3d2f2744">
+<div style="display:flex;justify-content:space-around"><div class="sw" style="background:#cdc3ee;width:34px;height:34px"></div><div class="sw sel" style="background:#e9a0b8;width:34px;height:34px"></div><div class="sw" style="background:#bcd8f0;width:34px;height:34px"></div><div class="sw" style="background:#c9e2b8;width:34px;height:34px"></div><div class="sw" style="background:#f3e3c4;width:34px;height:34px"></div><div class="sw" style="background:#d9a066;width:34px;height:34px"></div></div>
+<div style="text-align:center;font-size:10px;color:var(--ink2);margin-top:6px">Щипок — приблизить · два пальца — двигать</div></div>
+</div></div>
+
+</div></body></html>

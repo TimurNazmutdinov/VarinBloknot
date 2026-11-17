@@ -1,0 +1,152 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&display=swap" rel="stylesheet">
+</head><body>
+<script src="pencil_engine.js"></script>
+<script>
+function mk(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.lineCap='round';x.lineJoin='round';return[c,x]}
+function grain(w,h){const[c,x]=mk(w,h);const id=x.createImageData(w,h),d=id.data;for(let i=0;i<d.length;i+=4){const v=255-Math.pow(Math.random(),5)*90-Math.random()*10;d[i]=v;d[i+1]=v-2;d[i+2]=v-6;d[i+3]=255}x.putImageData(id,0,0);return c}
+function render(w,h,draw){const[Gc,G]=mk(w,h),[Cc,C]=mk(w,h);seed(7);draw(G,C);const out={};for(const colored of[false,true]){const[Oc,O]=mk(w,h);const g=O.createRadialGradient(w/2,h/2,Math.min(w,h)*.2,w/2,h/2,Math.max(w,h)*.75);g.addColorStop(0,'#fbf6ea');g.addColorStop(1,'#ebe0ca');O.fillStyle=g;O.fillRect(0,0,w,h);O.globalCompositeOperation='multiply';if(colored)O.drawImage(Cc,0,0);O.drawImage(Gc,0,0);O.globalAlpha=.5;O.drawImage(grain(w,h),0,0);out[colored?'color':'gray']=Oc.toDataURL('image/png')}return out}
+const both=(G,C,p,bb,col,o={},h={})=>{erase(G,p);erase(C,p);if(col)crayon(C,p,bb,col,o);if(h.ang!==undefined)hatch(G,p,bb,h);pencil(G,p,{w:h.w||1.1,a:h.a2||.7})};
+const poly=pts=>P2('M'+pts.map(p=>p.join(' ')).join(' L')+' Z');
+
+function varya(G,C){const pal={hair:'#a8642a',dress:'#8fb3dd'};
+erase(G,hairBack);hatch(G,hairBack,[140,115,460,410],{ang:1.25,gap:3.6,a:.26});strands(G,hairBack,80,[250,128,350],[170,400,430]);pencil(G,hairBack,{w:1.3,a:.75});
+crayon(C,hairBack,[140,115,460,410],pal.hair,{ang:1.3,w:3});
+erase(G,body);erase(C,body);crayon(C,body,[115,450,485,760],pal.dress,{ang:1.5,w:3});crayon(C,bodyShL,[110,440,220,760],shade(pal.dress,-.2),{ang:.9,base:.2,edge:0});crayon(C,bodyShR,[380,440,490,760],shade(pal.dress,-.2),{ang:-.9,base:.2,edge:0});
+hatch(G,bodyShL,[110,440,220,760],{ang:.9,gap:4,a:.2});hatch(G,bodyShR,[380,440,490,760],{ang:-.9,gap:4,a:.2});
+G.save();G.clip(body);for(let y=470;y<760;y+=9)for(let x=120;x<480;x+=10){G.globalAlpha=.18;G.strokeStyle='#2a2420';G.lineWidth=.6;G.beginPath();G.moveTo(x,y);G.lineTo(x+4,y+6);G.lineTo(x+8,y);G.stroke()}G.restore();G.globalAlpha=1;
+const placket=P2('M292 478 L292 760 M308 478 L308 760');pencil(G,placket,{w:.9,a:.6});
+for(let y=520;y<760;y+=55){const b=ell(300,y,7,7);erase(C,b);crayon(C,b,[290,y-8,310,y+8],'#e9d3a8',{base:.9,edge:.4});pencil(G,b,{w:.8,a:.7,passes:2})}
+pencil(G,body,{w:1.3,a:.7});
+erase(G,neck);erase(C,neck);crayon(C,neck,[260,380,340,465],'#f2c3a6',{ang:.3,w:2.5});crayon(C,neckSh,[260,380,340,440],'#d98a72',{base:.35,edge:0});hatch(G,neckSh,[260,380,340,440],{ang:.3,gap:2.6,a:.35});pencil(G,neck,{w:1,a:.6});
+erase(G,collar);erase(C,collar);crayon(C,collar,[230,450,370,510],'#f3eee2',{base:.3,edge:.15});pencil(G,collar,{w:1,a:.65});
+const segs=[];for(let i=0;i<9;i++){const t=i/8;segs.push([392+t*40+Math.sin(i)*3,330+t*240,i%2?-0.5:0.5])}
+for(const[x,y,r]of segs){const e=ell(x,y,17,22,r);erase(G,e);erase(C,e);crayon(C,e,[x-20,y-24,x+20,y+24],pal.hair,{ang:r+1.2,w:2.4,base:.45});hatch(G,e,[x-20,y-24,x+20,y+24],{ang:r+1.3,gap:3,a:.3});pencil(G,e,{w:1,a:.7,passes:2})}
+const bow=P2('M432 578 C410 560 404 596 432 588 C460 596 456 560 432 578 Z');erase(G,bow);erase(C,bow);crayon(C,bow,[400,555,465,600],'#e07a9a',{base:.6});pencil(G,bow,{w:1,a:.7});
+erase(G,face);erase(C,face);crayon(C,face,[198,166,402,406],'#f6d2bb',{ang:-.6,w:2.6,a:.22,edge:.18});
+hatch(G,faceShR,[300,225,402,406],{ang:-.7,gap:3,a:.2});crayon(C,faceShR,[300,225,402,406],'#e6a088',{ang:-.7,base:.3,a:.2,edge:0});
+G.save();G.clip(face);hatch(G,faceShTop,[200,200,402,285],{ang:.8,gap:2.8,a:.24});G.restore();C.save();C.clip(face);crayon(C,faceShTop,[200,200,402,285],'#e6a088',{ang:.8,base:.3,a:.2,edge:0});C.restore();
+crayon(C,ell(240,332,22,12),[215,318,265,346],'#f07f98',{ang:-.6,base:.3,a:.25,w:2,edge:0});crayon(C,ell(360,332,22,12),[335,318,385,346],'#f07f98',{ang:-.6,base:.3,a:.25,w:2,edge:0});
+pencil(G,face,{w:1.1,a:.65});
+for(const[cx,fl]of[[259,-1],[341,1]]){const e=eyeP(cx),ir=ell(cx,291,12.5,12.5);G.save();G.clip(e);hatch(G,ir,[cx-14,277,cx+14,305],{ang:.9,gap:1.8,a:.45});G.fillStyle='#1d1814';G.globalAlpha=.88;G.fill(ell(cx,291,5.5,6));G.globalAlpha=1;pencil(G,ir,{w:.8,a:.6,passes:2});G.restore();
+C.save();C.clip(e);crayon(C,ir,[cx-14,277,cx+14,305],'#6b8fbf',{ang:.9,w:1.6,base:.6,edge:.3});C.restore();
+erase(G,ell(cx+4,286,3.6,3.6));erase(C,ell(cx+4,286,3.6,3.6));
+pencil(G,P2(`M${cx-25} 292 C${cx-17} 274 ${cx+15} 272 ${cx+25} 290`),{w:2.8,a:.85,passes:4});
+const o=cx+fl*25;pencil(G,P2(`M${o-fl} 290 L${o+fl*9} 282 M${o-fl*5} 284 L${o+fl*3} 274`),{w:1.4,a:.75,passes:2})}
+pencil(G,P2('M232 268 C245 257 268 256 283 262'),{w:2.6,a:.55,passes:4});pencil(G,P2('M317 262 C332 256 355 257 368 268'),{w:2.6,a:.55,passes:4});
+pencil(G,P2('M301 306 C296 322 297 332 307 333'),{w:1,a:.55});
+crayon(C,mouth,[278,348,324,370],'#e0607a',{w:2,base:.6,edge:.3});pencil(G,mouth,{w:1.2,a:.75});
+erase(G,bangs);erase(C,bangs);crayon(C,bangs,[198,154,404,272],pal.hair,{ang:1.4,w:2.8});hatch(G,bangs,[198,154,404,272],{ang:1.4,gap:3.2,a:.24});strands(G,bangs,70,[285,160,315],[200,262,404]);pencil(G,bangs,{w:1.2,a:.75});
+}
+
+function cat(G,C,x,y,s,peek){G.save();C.save();G.translate(x,y);C.translate(x,y);G.scale(s,s);C.scale(s,s);
+const or='#e3913f',bb=[-80,-70,120,170];
+if(!peek){const tail=P2('M48 138 C100 146 120 96 98 64 C93 57 84 60 86 70 C102 98 90 126 46 122 Z');both(G,C,tail,bb,or,{ang:1},{ang:.5,gap:3,a:.3});
+const bodyP=P2('M-40 20 C-72 60 -70 130 -52 152 L52 152 C70 130 72 60 40 20 Z');both(G,C,bodyP,bb,or,{ang:1.4},{ang:-.8,gap:4,a:.15});
+const chest=ell(0,70,22,40);erase(C,chest);crayon(C,chest,bb,'#f6dfb8',{base:.5,edge:0});
+pencil(G,P2('M-50 80 Q-30 90 -46 104 M50 80 Q30 90 46 104 M-56 116 Q-36 124 -52 136 M56 116 Q36 124 52 136'),{w:2.4,a:.5,col:'#7a3c12'});
+for(const px of[-20,20]){const p=ell(px,150,15,9);both(G,C,p,bb,or,{},{})}}
+for(const px of[-30,30]){const e=P2(px<0?'M-42 -12 L-36 -60 L-6 -34 Z':'M42 -12 L36 -60 L6 -34 Z');both(G,C,e,bb,or,{},{ang:.4,gap:3,a:.2});const inr=P2(px<0?'M-34 -22 L-32 -48 L-16 -34 Z':'M34 -22 L32 -48 L16 -34 Z');crayon(C,inr,bb,'#f0a0a8',{base:.5,edge:0})}
+const head=ell(0,0,48,40);both(G,C,head,bb,or,{ang:.3},{ang:-.6,gap:4,a:.12});
+pencil(G,P2('M-12 -38 L-8 -22 M0 -40 L0 -24 M12 -38 L8 -22 M-46 -6 L-32 -2 M46 -6 L32 -2'),{w:2.4,a:.55,col:'#7a3c12'});
+const muz=ell(0,16,18,12);erase(C,muz);crayon(C,muz,bb,'#f6dfb8',{base:.5,edge:0});
+for(const ex of[-18,18]){const e=ell(ex,-2,10,7.5);erase(G,e);erase(C,e);crayon(C,e,bb,'#8fbf4a',{base:.7,edge:.3});G.fillStyle='#1d1814';G.globalAlpha=.9;G.fill(ell(ex,-2,2.2,6.5));G.globalAlpha=1;pencil(G,e,{w:1.2,a:.8,passes:2})}
+const nose=P2('M-6 10 L6 10 L0 17 Z');crayon(C,nose,bb,'#e07a8a',{base:.8,edge:0});pencil(G,nose,{w:1,a:.8,passes:2});
+pencil(G,P2('M0 17 Q-6 24 -12 21 M0 17 Q6 24 12 21'),{w:1,a:.7,passes:2});
+pencil(G,P2('M-20 16 L-62 10 M-20 20 L-60 24 M20 16 L62 10 M20 20 L60 24'),{w:.6,a:.45,passes:2});
+if(peek){for(const px of[-28,28]){const p=ell(px,46,16,10);both(G,C,p,bb,or,{},{})}}
+G.restore();C.restore()}
+
+function wallpaper(G,C,bb,col){const p=poly([[bb[0],bb[1]],[bb[2],bb[1]],[bb[2],bb[3]],[bb[0],bb[3]]]);crayon(C,p,bb,col,{ang:1.57,base:.3,a:.15,w:4,edge:0});C.save();C.clip(p);C.strokeStyle=shade(col,-.12);for(let x=bb[0]+20;x<bb[2];x+=44){C.globalAlpha=.35;C.lineWidth=6;C.beginPath();C.moveTo(x,bb[1]);C.lineTo(x,bb[3]);C.stroke()}C.restore();C.globalAlpha=1;
+G.save();G.clip(p);for(let x=bb[0]+20;x<bb[2];x+=44){for(let y=bb[1]+22;y<bb[3];y+=46){G.globalAlpha=.35;G.strokeStyle='#2a2420';G.lineWidth=.8;G.beginPath();G.arc(x+22,y,4,0,7);G.stroke()}}G.restore();G.globalAlpha=1}
+
+function room(G,C){const W=780,H=640;
+wallpaper(G,C,[0,0,W,430],'#cdc3ee');
+const floor=poly([[0,430],[W,430],[W,H],[0,H]]);crayon(C,floor,[0,430,W,H],'#d9a066',{ang:.1,w:3});G.save();G.clip(floor);for(let i=-12;i<=12;i++){G.globalAlpha=.4;G.strokeStyle='#2a2420';G.lineWidth=.8;G.beginPath();G.moveTo(390+i*14,430);G.lineTo(390+i*110,H);G.stroke()}G.restore();G.globalAlpha=1;hatch(G,poly([[0,430],[W,430],[W,470],[0,470]]),[0,430,W,470],{ang:.2,gap:3,a:.2});
+pencil(G,P2('M0 430 L780 430 M0 422 L780 422'),{w:1.2,a:.7});
+hatch(G,poly([[0,0],[40,0],[40,430],[0,430]]),[0,0,40,430],{ang:.7,gap:3,a:.2});hatch(G,poly([[740,0],[780,0],[780,430],[740,430]]),[740,0,780,430],{ang:-.7,gap:3,a:.2});
+const glass=poly([[300,70],[480,70],[480,300],[300,300]]);both(G,C,glass,[300,70,480,300],'#bcd8f0',{ang:-.8,a:.2},{ang:-.8,gap:9,a:.12});
+pencil(G,P2('M390 70 L390 300 M300 185 L480 185'),{w:4,a:.6});pencil(G,P2('M296 66 L484 66 L484 304 L296 304 Z'),{w:2,a:.8});
+crayon(C,poly([[330,200],[380,140],[430,200]]),[320,130,440,210],'#9cc6a0',{base:.4,edge:0});
+const sill=poly([[280,300],[500,300],[512,320],[268,320]]);both(G,C,sill,[268,300,512,320],'#f2ece0',{},{ang:.1,gap:3,a:.25});
+for(const side of[-1,1]){const x0=side<0?300:480;const cur=P2(side<0?'M262 52 C300 52 312 52 316 60 C300 160 330 250 318 330 L262 330 Z':'M518 52 C480 52 468 52 464 60 C480 160 450 250 462 330 L518 330 Z');both(G,C,cur,[255,50,525,335],'#e9a0b8',{ang:1.5,w:3},{ang:1.5,gap:5,a:.15});pencil(G,P2(side<0?'M276 60 C280 160 272 250 278 330 M292 60 C298 160 290 250 296 330':'M504 60 C500 160 508 250 502 330 M488 60 C482 160 490 250 484 330'),{w:.8,a:.5,passes:2})}
+pencil(G,P2('M250 50 L530 50'),{w:4,a:.8});
+const frame=poly([[80,120],[190,120],[190,205],[80,205]]);both(G,C,frame,[80,120,190,205],'#c9e2b8',{},{});pencil(G,P2('M92 190 Q120 150 140 175 Q160 140 180 190 M150 140 m-8 0 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0'),{w:.9,a:.6,passes:2});pencil(G,P2('M74 114 L196 114 L196 211 L74 211 Z'),{w:2,a:.7});
+const head=P2('M40 330 L40 270 C40 240 230 240 230 270 L230 330 Z');both(G,C,head,[40,240,230,330],'#b07a4e',{ang:.2},{ang:.6,gap:3.5,a:.22});
+const top=poly([[30,370],[290,370],[320,440],[10,440]]);both(G,C,top,[10,370,320,440],'#7fc3b0',{ang:.1},{});
+const front=poly([[10,440],[320,440],[320,505],[10,505]]);both(G,C,front,[10,440,320,505],'#5fa894',{ang:.1},{ang:.5,gap:3,a:.3});
+G.save();G.clip(top);for(let i=0;i<8;i++){pencil(G,P2(`M${40+i*36} 370 L${20+i*42} 440`),{w:.7,a:.35,passes:1})}G.restore();
+const pillow=ell(95,372,58,20);both(G,C,pillow,[35,350,155,395],'#f5f0e6',{},{});
+hatch(G,poly([[10,505],[320,505],[330,520],[0,520]]),[0,505,330,520],{ang:.2,gap:2,a:.45});
+const shelf=poly([[540,170],[740,170],[740,182],[540,182]]);both(G,C,shelf,[540,170,740,182],'#a8703f',{},{ang:.2,gap:2,a:.3});
+let bx=552;['#c0392b','#2e6fb5','#e8b23f','#3f8f5b','#8e5ea8'].forEach((c,i)=>{const w=16+(i%2)*6,h=60-(i%3)*10;const b=poly([[bx,170-h],[bx+w,170-h],[bx+w,170],[bx,170]]);both(G,C,b,[bx,170-h,bx+w,170],c,{ang:1.57,w:2.4},{ang:1.57,gap:5,a:.15});bx+=w+3});
+const pot=poly([[690,140],[724,140],[718,170],[696,170]]);both(G,C,pot,[690,140,724,170],'#d4693e',{},{});for(const a of[-.8,-.3,.3,.8]){const lf=ell(707+Math.sin(a)*14,122,6,16,a);both(G,C,lf,[680,100,735,145],'#5d9b45',{},{})}
+const dtop=poly([[520,380],[740,380],[762,410],[498,410]]);both(G,C,dtop,[498,380,762,410],'#c08454',{},{ang:.1,gap:3,a:.2});
+for(const lx of[510,742]){const l=poly([[lx,410],[lx+12,410],[lx+12,520],[lx,520]]);both(G,C,l,[lx,410,lx+12,520],'#a8703f',{},{ang:1.57,gap:3,a:.3})}
+const drawer=poly([[600,410],[700,410],[700,450],[600,450]]);both(G,C,drawer,[600,410,700,450],'#b0764a',{},{});pencil(G,ell(650,430,6,4),{w:1,a:.7});
+const shade1=poly([[668,298],[722,298],[742,338],[648,338]]);both(G,C,shade1,[648,298,742,338],'#f0c65a',{},{ang:.6,gap:4,a:.15});pencil(G,P2('M695 338 L695 372 M670 378 Q695 366 720 378'),{w:2,a:.8});
+crayon(C,ell(695,360,70,30),[620,320,770,400],'#f7e08a',{base:.25,a:.1,edge:0});
+const book=poly([[560,372],[620,368],[626,378],[566,382]]);both(G,C,book,[555,365,630,385],'#e07a9a',{},{});
+const rug=ell(410,560,200,58);both(G,C,rug,[210,500,610,620],'#d79aa0',{ang:.05,w:3},{});pencil(G,ell(410,560,170,44),{w:.8,a:.45,passes:2});pencil(G,ell(410,560,120,28),{w:.8,a:.4,passes:2});
+cat(G,C,420,262,.42,false);
+}
+
+function desk(G,C){const W=780,H=640;
+wallpaper(G,C,[0,0,W,300],'#cdc3ee');
+const top=poly([[0,300],[W,300],[W,H],[0,H]]);crayon(C,top,[0,300,W,H],'#c89060',{ang:.05,w:3.2});G.save();G.clip(top);for(let y=330;y<H;y+=rnd(26,40)){pencil(G,P2(`M0 ${y} Q390 ${y+rnd(-6,6)} 780 ${y+rnd(-4,4)}`),{w:.7,a:.3,passes:1})}G.restore();pencil(G,P2('M0 300 L780 300'),{w:1.4,a:.8});
+hatch(G,poly([[0,300],[W,300],[W,320],[0,320]]),[0,300,W,320],{ang:.1,gap:2.4,a:.35});
+const cup=P2('M70 180 L150 180 L144 300 L76 300 Z');both(G,C,cup,[70,180,150,300],'#7fa8d8',{ang:1.57},{ang:.8,gap:4,a:.15});
+[['#c0392b',85,110],['#e8b23f',102,95],['#3f8f5b',120,120],['#2e6fb5',135,100]].forEach(([c,x,y])=>{const p=poly([[x-4,180],[x-4,y],[x,y-14],[x+4,y],[x+4,180]]);both(G,C,p,[x-6,y-16,x+6,180],c,{ang:1.57,w:2},{})});
+const shelf=poly([[480,90],[760,90],[760,102],[480,102]]);both(G,C,shelf,[480,90,760,102],'#a8703f',{},{});
+let bx=500;['#8e5ea8','#e8b23f','#2e6fb5','#c0392b','#3f8f5b','#d4693e'].forEach((c,i)=>{const w=18+(i%3)*5,h=64-(i%2)*14;const b=poly([[bx,90-h],[bx+w,90-h],[bx+w,90],[bx,90]]);both(G,C,b,[bx,90-h,bx+w,90],c,{ang:1.57,w:2.4},{});bx+=w+4});
+hatch(G,poly([[220,560],[580,560],[600,590],[200,590]]),[200,560,600,590],{ang:.15,gap:2.4,a:.35});
+const pL=poly([[230,380],[395,372],[400,560],[210,566]]),pR=poly([[395,372],[565,382],[588,566],[400,560]]);
+both(G,C,pL,[210,370,400,566],'#fbf8f0',{base:.2,edge:.1},{});both(G,C,pR,[395,370,590,566],'#fbf8f0',{base:.2,edge:.1},{});
+G.save();G.clip(pL);for(let y=405;y<560;y+=22)pencil(G,P2(`M210 ${y} L400 ${y-4}`),{w:.6,a:.3,col:'#5a7fb0',passes:1});G.restore();
+G.save();G.clip(pR);for(let y=405;y<560;y+=22)pencil(G,P2(`M400 ${y-4} L590 ${y}`),{w:.6,a:.3,col:'#5a7fb0',passes:1});G.restore();
+pencil(G,P2('M397 372 L400 560'),{w:1.4,a:.7});
+G.save();G.fillStyle='#3a3060';G.globalAlpha=.75;G.font='italic 19px Georgia, serif';
+[['Пн  конфеты  60',410],['Вт  пирожок  45',454],['Ср  конфеты  80',498],['Чт  шоколадка  90',542]].forEach(([t,y],i)=>{G.save();G.translate(234,y-2);G.rotate(-.04);G.fillText(t,0,0);G.restore()});
+[['Пт  наклейки  70',410],['Сб  конфеты  60',454],['Итого: 405',512]].forEach(([t,y])=>{G.save();G.translate(418,y);G.rotate(.03);G.fillText(t,0,0);G.restore()});G.restore();
+pencil(G,P2('M418 520 Q480 530 540 516'),{w:1.6,a:.7,col:'#c0392b'});
+const pen=poly([[250,600],[470,520],[476,532],[256,612]]);both(G,C,pen,[250,520,476,612],'#e8b23f',{ang:-.35},{});const tip=poly([[470,520],[496,513],[476,532]]);both(G,C,tip,[470,510,500,535],'#f2d9b0',{},{});
+const pig=ell(650,350,80,56);both(G,C,pig,[570,290,730,410],'#f2a7b8',{ang:.2},{ang:-.7,gap:5,a:.12});
+const snout=ell(728,352,18,22);both(G,C,snout,[708,328,748,376],'#e98aa0',{},{});pencil(G,P2('M724 346 L724 352 M733 346 L733 352'),{w:2,a:.8});
+const ear=poly([[690,302],[704,280],[714,308]]);both(G,C,ear,[688,278,716,310],'#e98aa0',{},{});
+G.fillStyle='#1d1814';G.globalAlpha=.85;G.fill(ell(698,334,4,5));G.globalAlpha=1;
+pencil(G,P2('M630 298 L668 296'),{w:3,a:.85});
+for(const lx of[600,640,680,710]){const l=poly([[lx,395],[lx+16,395],[lx+16,420],[lx,420]]);both(G,C,l,[lx,395,lx+16,420],'#e98aa0',{},{})}
+pencil(G,P2('M572 340 C556 330 560 314 572 318'),{w:1.4,a:.7});
+for(const[x,y]of[[560,470],[600,480],[588,462]]){const c=ell(x,y,16,9);both(G,C,c,[x-18,y-11,x+18,y+11],'#d9b44a',{base:.6},{})}
+for(const[x,y,c]of[[110,430,'#c0392b'],[150,500,'#2e6fb5'],[90,560,'#e8b23f'],[160,410,'#3f8f5b']]){const w=P2(`M${x-22} ${y-10} L${x-10} ${y} L${x-22} ${y+10} Z M${x+22} ${y-10} L${x+10} ${y} L${x+22} ${y+10} Z`);both(G,C,w,[x-24,y-12,x+24,y+12],c,{},{});const b=ell(x,y,11,8);both(G,C,b,[x-12,y-9,x+12,y+9],shade(c,.2),{},{})}
+}
+
+function kitchen(G,C){const W=780,H=640;
+const wall=poly([[0,0],[W,0],[W,420],[0,420]]);crayon(C,wall,[0,0,W,420],'#f3e3c4',{ang:1.5,base:.3,a:.15,edge:0});
+const tiles=poly([[0,250],[W,250],[W,420],[0,420]]);crayon(C,tiles,[0,250,W,420],'#cfe3e8',{ang:0,base:.3,a:.15,edge:0});G.save();G.clip(tiles);for(let y=250;y<420;y+=34)pencil(G,P2(`M0 ${y} L780 ${y}`),{w:.6,a:.35,passes:1});for(let y=250,r=0;y<420;y+=34,r++)for(let x=(r%2)*30;x<W;x+=60)pencil(G,P2(`M${x} ${y} L${x} ${y+34}`),{w:.6,a:.35,passes:1});G.restore();
+const glass=poly([[50,40],[260,40],[260,220],[50,220]]);both(G,C,glass,[50,40,260,220],'#bcd8f0',{ang:-.8,a:.2},{ang:-.8,gap:10,a:.1});pencil(G,P2('M155 40 L155 220 M50 130 L260 130'),{w:4,a:.6});pencil(G,P2('M46 36 L264 36 L264 224 L46 224 Z'),{w:2,a:.8});
+const caf=P2('M40 120 L270 120 L270 170 Q240 186 212 170 Q184 186 156 170 Q128 186 100 170 Q72 186 40 170 Z');both(G,C,caf,[40,120,270,190],'#f0f0f0',{},{});G.save();G.clip(caf);for(let x=40;x<270;x+=14)for(let y=120;y<190;y+=14)if(((x+y)/14)%2<1){C.globalAlpha=.6;C.fillStyle='#d9534f';C.fillRect(x,y,14,14)}C.restore();G.restore();
+const sh=poly([[430,110],[740,110],[740,122],[430,122]]);both(G,C,sh,[430,110,740,122],'#a8703f',{},{});
+[[460,'#e8b23f'],[530,'#c0392b'],[600,'#9cc6a0'],[670,'#d4693e']].forEach(([x,c])=>{const j=P2(`M${x} 110 L${x} 62 Q${x} 56 ${x+8} 56 L${x+42} 56 Q${x+50} 56 ${x+50} 62 L${x+50} 110 Z`);both(G,C,j,[x,50,x+50,110],'#eef4f6',{base:.15,edge:.1},{});const fill=poly([[x+2,75],[x+48,75],[x+48,108],[x+2,108]]);crayon(C,fill,[x,75,x+50,110],c,{base:.6,edge:0});const lid=poly([[x-2,48],[x+52,48],[x+52,58],[x-2,58]]);both(G,C,lid,[x-2,46,x+52,58],'#d9534f',{},{})});
+const ttop=poly([[40,420],[740,420],[780,490],[0,490]]);both(G,C,ttop,[0,420,780,490],'#f4f1ea',{base:.2},{});G.save();G.clip(ttop);for(let x=-40;x<820;x+=40){C.globalAlpha=.35;C.fillStyle='#d9534f';C.fillRect(x,420,20,70)}for(let y=420;y<490;y+=24){C.fillRect(0,y,780,12)}C.restore();G.restore();
+const drop=poly([[0,490],[780,490],[780,640],[0,640]]);both(G,C,drop,[0,490,780,640],'#f4f1ea',{base:.2},{ang:1.57,gap:6,a:.12});C.save();C.clip(drop);for(let x=-20;x<800;x+=40){C.globalAlpha=.35;C.fillStyle='#d9534f';C.fillRect(x,490,20,150)}C.restore();
+hatch(G,poly([[0,490],[780,490],[780,520],[0,520]]),[0,490,780,520],{ang:.2,gap:2.6,a:.3});
+cat(G,C,150,388,.75,true);
+const dough=P2('M290 370 C280 300 330 262 380 268 C410 240 470 256 480 300 C510 312 506 360 490 372 Z');both(G,C,dough,[280,240,510,372],'#f2dcae',{ang:.4,w:2.6},{ang:.6,gap:6,a:.1});
+pencil(G,P2('M330 300 Q336 292 344 298 M420 280 Q428 272 436 280 M456 318 Q462 312 470 318'),{w:.8,a:.5,passes:2});
+const bowl=P2('M270 372 L510 372 C505 420 470 446 390 446 C310 446 275 420 270 372 Z');both(G,C,bowl,[270,370,510,446],'#7fa8d8',{ang:.2},{ang:-.7,gap:3.5,a:.22});
+const rim=ell(390,372,122,14);both(G,C,rim,[268,358,512,386],'#a9c6e8',{},{});G.save();G.clip(bowl);for(let x=290;x<500;x+=40){pencil(G,ell(x,412,8,8),{w:.8,a:.6,passes:1})}G.restore();
+const towel=P2('M440 262 C470 250 500 268 506 300 C512 340 500 380 488 398 L470 396 C478 360 476 320 452 300 Z');both(G,C,towel,[436,248,514,400],'#f0f0f0',{},{});C.save();C.clip(towel);C.globalAlpha=.5;C.strokeStyle='#d9534f';C.lineWidth=4;for(let y=260;y<400;y+=16){C.beginPath();C.moveTo(436,y);C.lineTo(514,y+10);C.stroke()}C.restore();
+const bag=P2('M560 300 L640 296 L652 452 L548 456 Z');both(G,C,bag,[548,290,652,456],'#efe6d2',{},{ang:-.6,gap:5,a:.12});pencil(G,P2('M560 300 L572 286 L586 300 L600 286 L614 300 L628 286 L640 296'),{w:1,a:.7,passes:2});
+G.save();G.fillStyle='#4a3b30';G.globalAlpha=.75;G.font='bold 30px Caveat, cursive';G.translate(566,390);G.rotate(-.03);G.fillText('МУКА',0,0);G.restore();
+const pin=poly([[300,476],[560,462],[564,478],[304,492]]);both(G,C,pin,[296,460,566,494],'#d9a066',{},{});for(const[x,y]of[[290,484],[574,470]]){const h=ell(x,y,16,7,-.05);both(G,C,h,[x-18,y-8,x+18,y+8],'#b07a4e',{},{})}
+for(const[x,y]of[[640,470],[672,474]]){const e=ell(x,y,16,11);both(G,C,e,[x-18,y-13,x+18,y+13],'#f6ead6',{},{})}
+}
+
+const res={};
+document.fonts.load('26px Caveat').catch(()=>{}).finally(()=>{
+res.varya=render(600,760,varya);res.room=render(780,640,room);res.desk=render(780,640,desk);res.kitchen=render(780,640,kitchen);
+res.cat=render(300,260,(G,C)=>cat(G,C,150,90,1,false));
+window.RESULT=res;
+for(const k in res)for(const m of['gray','color']){const a=document.createElement('a');a.href=res[k][m];a.download=k+'_'+m+'.png';a.textContent='Скачать '+k+'_'+m+'.png';a.style.cssText='display:block;font:16px sans-serif;margin:6px';document.body.appendChild(a)}});
+</script></body></html>

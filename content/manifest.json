@@ -1,0 +1,50 @@
+{
+    "contentVersion":  1,
+    "minAppVersion":  "0.1.0",
+    "files":  [
+                  {
+                      "path":  "art/desk.webp",
+                      "sha256":  "88aa3c6806c92d100896b2e78712e364818842c3ef54b9bb4c1171e88cae794b"
+                  },
+                  {
+                      "path":  "art/desk_gray.webp",
+                      "sha256":  "42dbbb332a183747dd416703020e1c3b75895c1d47566602f17dbe1e7351eaac"
+                  },
+                  {
+                      "path":  "art/kitchen.webp",
+                      "sha256":  "753c4fcf0696abc5e6bcfdcebbc7c298360535b46b64a45509c3ff2f9f4dc6b8"
+                  },
+                  {
+                      "path":  "art/kitchen_gray.webp",
+                      "sha256":  "317332a14b3ef3d05ff0a59c7a877750db744fc839df435e2b38867922d0e837"
+                  },
+                  {
+                      "path":  "art/room.webp",
+                      "sha256":  "219b864e64f1bb73c4152a303fd5d75d901e67385183b11fcc85fa663a50f9b0"
+                  },
+                  {
+                      "path":  "art/room_gray.webp",
+                      "sha256":  "d71eecaa29d142bb128aa36fbea82c2315088f3a6e2ef2dd84a623b2db112011"
+                  },
+                  {
+                      "path":  "art/varya.webp",
+                      "sha256":  "411ba5a8f27602d08c1cd1c044cc04bf9a165360441116cf0fc8edc1974da0b3"
+                  },
+                  {
+                      "path":  "scenes/scene_01.json",
+                      "sha256":  "474eb87adf721a3549a0451e55a26b2a2d716324a37b890d4dd4bce29d3a7894"
+                  },
+                  {
+                      "path":  "scenes/scene_02.json",
+                      "sha256":  "83be367b543430ceaff27cb12173cfa9e5d89d8f9e22c11c335f9283de545f67"
+                  },
+                  {
+                      "path":  "scenes/scene_03.json",
+                      "sha256":  "c1e223bcdcd469966db7b8804a9865ac82e71b207373aa79085c59bfb6d8e2ed"
+                  },
+                  {
+                      "path":  "speakers.json",
+                      "sha256":  "e41869de3c8497fc7a59eba62c2a2b1579fdb330d54860e80e9df01a9e53c735"
+                  }
+              ]
+}
